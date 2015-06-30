@@ -131,7 +131,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
 
     Lang = Class.extend({
         curLang: 'en',
-        defaultLoaded: false,
+        defaultLoaded: true,
         loaded: false,
         init: function() {
             _this = this;
