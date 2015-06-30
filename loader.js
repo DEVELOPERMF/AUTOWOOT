@@ -149,7 +149,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
          * Load default language (English) from server.
          */
         loadDefault: function() {
-            $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/lang.en.json' + Date.now(), function(languageData) {
+            $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/lang.en.json?_' + Date.now(), function(languageData) {
                 defaultLanguage = languageData;
                 _this.defaultLoaded = true;
             }).error(function() {
