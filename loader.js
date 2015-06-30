@@ -290,7 +290,7 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
         sfx: 'string'
     });
 
-    $.getJSON('https://d1rfegul30378.cloudfront.net/titles.json',
+    $.getJSON('https://raw.github.com/DEVELOPERMF/AUTOWOOT/master/titles.json',
         /**
          * @param {{developer: Array, sponsor: Array, special: Array, ambassador: Array, donator: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}, patreon: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}}} data
          */
