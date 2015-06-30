@@ -161,8 +161,8 @@
         "infoDisable": "You can disable them in the menu"
     },
     "menu": {
-        "autowoot": "Autowoot",
-        "autojoin": "Autojoin",
+        "autowoot": "AutoWoot",
+        "autojoin": "AutoJoin",
         "customchatcolors": "Custom Chat Colors",
         "autorespond": "AFK Autorespond",
         "notify": "Notifications",
