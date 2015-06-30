@@ -131,8 +131,8 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
 
     Lang = Class.extend({
         curLang: 'en',
-        defaultLoaded: false,
-        loaded: false,
+        defaultLoaded: true,
+        loaded: true,
         init: function() {
             _this = this;
             $.getJSON('https://d1rfegul30378.cloudfront.net/files/lang.json?_' + Date.now(), function(a) {
@@ -149,7 +149,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
          * Load default language (English) from server.
          */
         loadDefault: function() {
-            $.getJSON('https://d1rfegul30378.cloudfront.net/files/langs/lang.en.json?_' + Date.now(), function(languageData) {
+            $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/lang.en.json' + Date.now(), function(languageData) {
                 defaultLanguage = languageData;
                 _this.defaultLoaded = true;
             }).error(function() {
@@ -290,7 +290,7 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
         sfx: 'string'
     });
 
-    $.getJSON('https://d1rfegul30378.cloudfront.net/titles.json',
+    $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/titles.json',
         /**
          * @param {{developer: Array, sponsor: Array, special: Array, ambassador: Array, donator: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}, patreon: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}}} data
          */
