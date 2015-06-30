@@ -131,7 +131,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
 
     Lang = Class.extend({
         curLang: 'en',
-        defaultLoaded: false,
+        defaultLoaded: true,
         loaded: false,
         init: function() {
             _this = this;
@@ -182,7 +182,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
                 language = {};
                 $.extend(true, language, defaultLanguage, languageData);
                 _this.curLang = lang;
-                _this.loaded = true;
+                _this.loaded = false;
                 if (typeof callback === 'function') callback();
             }).error(function() {
                 console.log('[plug³] Couldn\'t load language file for ' + lang);
