@@ -132,7 +132,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
     Lang = Class.extend({
         curLang: 'en',
         defaultLoaded: true,
-        loaded: false,
+        loaded: true,
         init: function() {
             _this = this;
             $.getJSON('https://d1rfegul30378.cloudfront.net/files/lang.json?_' + Date.now(), function(a) {
