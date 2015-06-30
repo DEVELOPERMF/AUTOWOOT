@@ -131,7 +131,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
 
     Lang = Class.extend({
         curLang: 'en',
-        defaultLoaded: true,
+        defaultLoaded: false,
         loaded: false,
         init: function() {
             _this = this;
@@ -149,7 +149,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
          * Load default language (English) from server.
          */
         loadDefault: function() {
-            $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/lang.en.json' + Date.now(), function(languageData) {
+            $.getJSON('https://d1rfegul30378.cloudfront.net/files/langs/lang.en.json?_' + Date.now(), function(languageData) {
                 defaultLanguage = languageData;
                 _this.defaultLoaded = true;
             }).error(function() {
@@ -178,7 +178,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
                 if (typeof callback === 'function') callback();
                 return;
             }
-            $.getJSON('http://rawgit.com/DEVELOPERMF/AUTOWOOT/master/lang.en.json' + Date.now(), function(languageData) {
+            $.getJSON('https://d1rfegul30378.cloudfront.net/files/langs/lang.' + lang + '.json?_' + Date.now(), function(languageData) {
                 language = {};
                 $.extend(true, language, defaultLanguage, languageData);
                 _this.curLang = lang;
