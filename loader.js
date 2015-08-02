@@ -344,7 +344,7 @@ define('ad77cc/b9e264',['ad77cc/b9ec20', 'ad77cc/e30d36', 'lang/Lang', 'ad77cc/c
         sfx: 'string'
     });
 
-    $.getJSON('https://d1rfegul30378.cloudfront.net/titles.json',
+    $.getJSON('https://rawgit.com/DEVELOPERMF/AUTOWOOT/master/titles.json',
         /**
          * @param {{developer: Array, sponsor: Array, special: Array, ambassador: Array, donator: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}, patreon: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}}} data
          */
