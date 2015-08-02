@@ -1,5 +1,5 @@
 /**
- * @license Copyright © 2012-2015 The plug³ Team and other contributors
+ * @license Copyright Â© 2012-2015 The plugÂł Team and other contributors
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,21 +15,21 @@
  */
 var plugCubed;
 if (typeof plugCubed !== 'undefined')
-    plugCubed.close();
-/**
+    plugCubed.close();/**
  Simple JavaScript Inheritance
  By John Resig http://ejohn.org/
  MIT Licensed.
 
  Modified by Plug DJ, Inc.
  */
-define('b9a9d4/fa8cfc', [], function() {
+define('ad77cc/b9ec20',[],function() {
     var e, t, n;
     e = false;
     t = /xyz/.test(function() {
         xyz
     }) ? /\b_super\b/ : /.*/;
-    n = function() {};
+    n = function() {
+    };
     n.extend = function(n) {
         var r = this.prototype;
 
@@ -65,7 +65,7 @@ define('b9a9d4/fa8cfc', [], function() {
     };
     return n;
 });
-define('b9a9d4/d0cf31/a7c2e0', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
+define('ad77cc/e96f5a/a1fc22',['jquery', 'ad77cc/b9ec20'], function($, Class) {
     return Class.extend({
         triggerHandlers: [],
         trigger: undefined,
@@ -123,7 +123,7 @@ define('b9a9d4/d0cf31/a7c2e0', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
         }
     });
 });
-define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
+define('ad77cc/e30d36', ['jquery', 'ad77cc/b9ec20'], function($, Class) {
     var language, defaultLanguage, _this, Lang;
 
     language = {};
@@ -138,10 +138,10 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
             $.getJSON('https://d1rfegul30378.cloudfront.net/files/lang.json?_' + Date.now(), function(a) {
                 _this.allLangs = a;
             }).done(function() {
-                if (_this.allLangs.length === 1) API.chatLog('Error loading language info for plug³');
+                if (_this.allLangs.length === 1) API.chatLog('Error loading language info for plugÂł');
                 _this.loadDefault();
             }).fail(function() {
-                API.chatLog('Error loading language info for plug³');
+                API.chatLog('Error loading language info for plugÂł');
                 _this.loadDefault();
             });
         },
@@ -185,7 +185,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
                 _this.loaded = true;
                 if (typeof callback === 'function') callback();
             }).error(function() {
-                console.log('[plug³] Couldn\'t load language file for ' + lang);
+                console.log('[plugÂł] Couldn\'t load language file for ' + lang);
                 language = {};
                 $.extend(true, language, defaultLanguage);
                 _this.curLang = 'en';
@@ -199,8 +199,7 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
          * @returns {*} String from language file, if not found returns selector and additional arguments.
          */
         i18n: function(selector) {
-            var a = language,
-                i;
+            var a = language, i;
             if (a == null || selector == null) {
                 return '{' + $.makeArray(arguments).join(', ') + '}';
             }
@@ -225,14 +224,25 @@ define('b9a9d4/ba727f', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
     });
     return new Lang();
 });
-define('b9a9d4/f1f282', ['b9a9d4/fa8cfc'], function(Class) {
+/**
+ * Thank you to ReAnna https://github.com/goto-bus-stop and Yemasthui https://github.com/Yemasthui
+ **/
+
+define('ad77cc/cdfb8c',['ad77cc/b9ec20', 'underscore', 'backbone'], function(Class, _, backbone) {
+
+    var modules = require.s.contexts._.defined;
+    var iterator;
+    var collectionConstructor = backbone.Collection;
+    var modelConstructor = backbone.Model;
+    var viewConstructor = backbone.View;
+
     var moduleLoader = Class.extend({
         iterate: function(a, c) {
-            if (typeof c !== 'object' || typeof a !== 'object') return false;
+            if (!_.isObject(c) || !_.isObject(a)) return false;
             var d;
             for (d in a) {
                 if (a.hasOwnProperty(d)) {
-                    if (typeof a[d] === 'object') {
+                    if (_.isObject(a[d])) {
                         if (!this.iterate(a[d], c[d])) return false;
                     } else if ((typeof c[d]).toLowerCase() !== a[d].toLowerCase()) return false;
                 }
@@ -240,12 +250,57 @@ define('b9a9d4/f1f282', ['b9a9d4/fa8cfc'], function(Class) {
             }
         },
         getModule: function(a) {
-            var modules = require.s.contexts._.defined,
-                iterator;
             for (iterator in modules) {
                 if (modules.hasOwnProperty(iterator)) {
                     var module = modules[iterator];
                     if (this.iterate(a, module)) return module;
+                }
+            }
+        },
+        getEvent: function(event) {
+            for (iterator in modules) {
+                if (modules.hasOwnProperty(iterator) && modules[iterator] && modules[iterator]._name === event) return modules[iterator];
+            }
+        },
+        getView: function(identifier) {
+            for (iterator in modules) {
+                if (modules.hasOwnProperty(iterator)) {
+                    var module = modules[iterator];
+                    var idMatch, classMatch;
+                    if (!module) continue;
+
+                    if (module.prototype && _.isFunction(module.prototype.render) && _.isFunction(module.prototype.$) && !identifier.isBackbone) {
+                        idMatch = identifier.id && module.prototype.id === identifier.id;
+                        classMatch = identifier.className && module.prototype.className === identifier.className;
+
+                        var templateMatch = identifier.isTemplate && module.prototype.template === require(identifier.template);
+                        var idFunction = identifier.func && _.isFunction(module.prototype[identifier.func]) && idMatch;
+                        var classFunction = identifier.func && _.isFunction(module.prototype[identifier.func]) && classMatch;
+
+                        if ((!identifier.func && classMatch) || (!identifier.func && idMatch) || (!identifier.func && templateMatch) || (identifier.func && idFunction) || (identifier.func && classFunction)) return module;
+
+                    } else if (identifier.isBackbone) {
+
+                        idMatch = identifier.id && module.id === identifier.id;
+                        classMatch = identifier.className && module.className === identifier.className;
+
+                        var backboneId = module instanceof backbone.View && idMatch;
+                        var backboneClass = module instanceof viewConstructor && classMatch;
+
+                        if ((idMatch && backboneId) || (classMatch && backboneClass)) return module;
+                        if (identifier.isModel && module instanceof modelConstructor && _.isArray(module.get('fx'))) return module;
+                    }
+                }
+            }
+        },
+        getCollection: function(identifier) {
+            for (iterator in modules) {
+                if (modules.hasOwnProperty(iterator)) {
+                    var module = modules[iterator];
+                    if (!module || !(module instanceof collectionConstructor)) continue;
+                    if (identifier.comparator && module.comparator) {
+                        if (identifier.comparator === module.comparator) return module;
+                    }
                 }
             }
         }
@@ -253,21 +308,21 @@ define('b9a9d4/f1f282', ['b9a9d4/fa8cfc'], function(Class) {
     return new moduleLoader();
 });
 
-define('b9a9d4/f24d95/e0756e', ['b9a9d4/fd4984', 'b9a9d4/f1f282'], function(p3Utils, ModuleLoader) {
+define('ad77cc/d2f21b/a1d195',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
     return ModuleLoader.getModule({
         defaultSettings: 'function'
     });
 });
 
-define('b9a9d4/f24d95/c7a802', ['b9a9d4/fd4984', 'b9a9d4/f1f282'], function(p3Utils, ModuleLoader) {
+define('ad77cc/d2f21b/b0411a',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
     return ModuleLoader.getModule({
         onNameChange: 'function'
     });
 });
 
 var plugCubedUserData;
-define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/f1f282', 'b9a9d4/f24d95/e0756e', 'b9a9d4/f24d95/c7a802'], function(Class, p3Lang, Lang, ModuleLoader, Database, PopoutView) {
-    var cleanHTMLMessage, developer, sponsor, ambassador, donatorDiamond, donatorPlatinum, donatorGold, donatorSilver, donatorBronze, special, PlugUI, runLite;
+define('ad77cc/b9e264',['ad77cc/b9ec20', 'ad77cc/e30d36', 'lang/Lang', 'ad77cc/cdfb8c', 'ad77cc/d2f21b/a1d195', 'ad77cc/d2f21b/b0411a'], function(Class, p3Lang, Lang, ModuleLoader, Database, PopoutView) {
+    var cleanHTMLMessage, developer, sponsor, ambassador, donatorDiamond, donatorPlatinum, donatorGold, donatorSilver, donatorBronze, special, PlugUI;
 
     cleanHTMLMessage = function(input, disallow, extraAllow) {
         if (input == null) return '';
@@ -284,13 +339,12 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
     };
     developer = sponsor = ambassador = donatorDiamond = donatorPlatinum = donatorGold = donatorSilver = donatorBronze = [];
     special = {};
-    runLite = !requirejs.defined('d5eda/d9215/dc1ec');
 
     PlugUI = ModuleLoader.getModule({
         sfx: 'string'
     });
 
-    $.getJSON('https://raw.githubusercontent.com/DEVELOPERMF/AUTOWOOT/master/titles.json',
+    $.getJSON('https://d1rfegul30378.cloudfront.net/titles.json',
         /**
          * @param {{developer: Array, sponsor: Array, special: Array, ambassador: Array, donator: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}, patreon: {diamond: Array, platinum: Array, gold: Array, silver: Array, bronze: Array}}} data
          */
@@ -309,7 +363,6 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
         });
 
     var handler = Class.extend({
-        runLite: runLite,
         proxifyImage: function(url) {
             if (this.startsWithIgnoreCase(url, 'http://')) {
                 return 'https://api.plugCubed.net/proxy/' + url;
@@ -445,6 +498,10 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
         getPlugCubedSpecial: function(uid) {
             if (!uid) uid = API.getUser().id;
             return special[uid];
+        },
+        html2text: function(html) {
+            if (!html) return;
+            return $('<div/>').html(html).text();
         },
         cleanHTML: function(msg, disallow, extraAllow) {
             return cleanHTMLMessage(msg, disallow, extraAllow);
@@ -588,8 +645,7 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
         },
         getLastMessageTime: function(uid) {
             var time = Date.now() - this.getUserData(uid, 'lastChat', this.getUserData(uid, 'joinTime', Date.now()));
-            var IgnoreCollection = require('b9a9d4/f24d95/dd1940');
-
+            var IgnoreCollection = require('ad77cc/d2f21b/c24a85');
             if (IgnoreCollection._byId[uid] === true)
                 return p3Lang.i18n('error.ignoredUser');
             return this.getRoundedTimestamp(time, true);
@@ -947,13 +1003,12 @@ define('b9a9d4/fd4984', ['b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'lang/Lang', 'b9a9d4/
     });
     return new handler();
 });
-define('b9a9d4/b2e27d', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/f24d95/c7a802'], function($, Class, p3Utils, PopoutView) {
-    var obj, styles = {},
-        imports = [];
+
+define('ad77cc/c6be2b',['jquery', 'ad77cc/b9ec20', 'ad77cc/b9e264', 'ad77cc/d2f21b/b0411a'], function($, Class, p3Utils, PopoutView) {
+    var obj, styles = {}, imports = [];
 
     function update() {
-        var a = '',
-            i;
+        var a = '', i;
         for (i in imports) {
             if (imports.hasOwnProperty(i))
                 a += '@import url("' + imports[i] + '");\n';
@@ -1022,7 +1077,7 @@ define('b9a9d4/b2e27d', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/f24
     });
     return new a();
 });
-define('b9a9d4/f24d95/f84645', ['b9a9d4/fd4984', 'b9a9d4/f1f282'], function(p3Utils, ModuleLoader) {
+define('ad77cc/d2f21b/d2d797',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
     return ModuleLoader.getModule({
         dispatch: 'function'
     });
@@ -1032,10 +1087,9 @@ define('b9a9d4/f24d95/f84645', ['b9a9d4/fd4984', 'b9a9d4/f1f282'], function(p3Ut
  Modified version of plug.dj's VolumeView
  VolumeView copyright (C) 2014 by Plug DJ, Inc.
  */
-define('b9a9d4/f24d95/cbd360', ['jquery', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a9d4/f24d95/f84645'], function($, p3Lang, p3Utils, _$context) {
-    if (p3Utils.runLite) return null;
-    var original = require('d5eda/a37c8/caebc/be6e4/c2b75'),
-        _PlaybackModel;
+define('ad77cc/d2f21b/dc7307',['jquery', 'ad77cc/e30d36', 'ad77cc/b9e264', 'ad77cc/d2f21b/d2d797', 'ad77cc/cdfb8c'], function($, p3Lang, p3Utils, _$context, ModuleLoader) {
+
+    var original = ModuleLoader.getView({id: 'volume'}), _PlaybackModel;
 
     return original.extend({
         initialize: function(PlaybackModel) {
@@ -1109,136 +1163,86 @@ define('b9a9d4/f24d95/cbd360', ['jquery', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a
         }
     });
 });
-define('b9a9d4/f24d95/e2730c', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/f24d95/cbd360'], function(Class, p3Utils, p3Lang, VolumeView) {
-    var handler, that;
+define('ad77cc/d2f21b/c7ef85',['ad77cc/b9ec20', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/d2f21b/dc7307', 'ad77cc/cdfb8c'], function(Class, p3Utils, p3Lang, VolumeView, ModuleLoader) {
+    var handler, that, volume;
 
-    if (p3Utils.runLite) {
-        handler = Class.extend({
-            init: function() {
-                API.on(API.ADVANCE, this.djAdvance, this);
-                this.set('lastVolume', this.get('volume'));
-            },
-            close: function() {
-                API.off(API.ADVANCE, this.djAdvance, this);
-            },
-            djAdvance: function() {
-                if (this.get('mutedOnce'))
-                    this.unmute();
-            },
-            get: function(key) {
-                switch (key) {
-                    case 'volume':
-                        return API.getVolume();
-                    case 'muted':
-                        return this.get('volume') === 0;
-                    default:
-                        break;
-                }
-                return this[key];
-            },
-            set: function(key, value) {
-                switch (key) {
-                    case 'volume':
-                        API.setVolume(value);
-                        return;
-                    case 'muted':
-                        this.set('volume', value ? 0 : this.get('lastVolume'));
-                        return;
-                    default:
-                        break;
-                }
-                this[key] = value;
-            },
-            mute: function() {
-                this.set('lastVolume', API.getVolume());
-                API.setVolume(0);
-            },
-            muteOnce: function() {
-                this.set('mutedOnce', true);
-                this.set('lastVolume', API.getVolume());
-                API.setVolume(0);
-            },
-            unmute: function() {
-                API.setVolume(this.get('lastVolume'));
-            }
+    var PlaybackModel = ModuleLoader.getModule({
+            onElapsedChange: 'function'
         });
-    } else {
-        var PlaybackModel = require('d5eda/b4d5c/c7b46'),
-            volume;
 
-        function onMediaChange() {
-            if (PlaybackModel.get('mutedOnce') === true)
-                PlaybackModel.set('volume', PlaybackModel.get('lastVolume'));
-        }
+    function onMediaChange() {
+        if (PlaybackModel.get('mutedOnce') === true)
+            PlaybackModel.set('volume', PlaybackModel.get('lastVolume'));
+    }
 
-        handler = Class.extend({
-            init: function() {
-                that = this;
-                PlaybackModel.off('change:volume', PlaybackModel.onVolumeChange);
-                PlaybackModel.onVolumeChange = function() {
-                    if (typeof plugCubed === 'undefined')
-                        this.set('muted', this.get('volume') == 0);
-                    else {
-                        if (this.get('mutedOnce') == null)
-                            this.set('mutedOnce', false);
+    handler = Class.extend({
+        init: function() {
+            that = this;
+            PlaybackModel.off('change:volume', PlaybackModel.onVolumeChange);
+            PlaybackModel.onVolumeChange = function() {
+                if (typeof plugCubed === 'undefined') {
+                    this.set('muted', this.get('volume') === 0);
+                } else {
+                    if (this.get('mutedOnce') == null)
+                        this.set('mutedOnce', false);
 
-                        if (this.get('volume') === 0) {
-                            if (!this.get('muted'))
-                                this.set('muted', true);
-                            else if (!this.get('mutedOnce'))
-                                this.set('mutedOnce', true);
-                            else {
-                                this.set('mutedOnce', false);
-                                this.set('muted', false);
-                            }
-                        } else {
+                    if (this.get('volume') === 0) {
+                        if (!this.get('muted')) {
+                            this.set('muted', true);
+                        } else if (!this.get('mutedOnce')) {
+                            this.set('mutedOnce', true);
+                        }
+                        else {
                             this.set('mutedOnce', false);
                             this.set('muted', false);
                         }
+                    } else {
+                        this.set('mutedOnce', false);
+                        this.set('muted', false);
                     }
-                };
-                PlaybackModel.on('change:volume', PlaybackModel.onVolumeChange);
+                }
+            };
+            PlaybackModel.on('change:volume', PlaybackModel.onVolumeChange);
 
-                PlaybackModel.on('change:media', onMediaChange);
-                PlaybackModel._events['change:media'].unshift(PlaybackModel._events['change:media'].pop());
+            PlaybackModel.on('change:media', onMediaChange);
+            PlaybackModel._events['change:media'].unshift(PlaybackModel._events['change:media'].pop());
 
-                setTimeout(function() {
-                    $('#volume').remove();
-                    volume = new VolumeView(that);
-                    $('#now-playing-bar').append(volume.$el);
-                    volume.render();
-                }, 1);
-            },
-            onVolumeChange: function() {
-                PlaybackModel.onVolumeChange();
-            },
-            get: function(key) {
-                return PlaybackModel.get(key);
-            },
-            set: function(key, value) {
-                PlaybackModel.set(key, value);
-            },
-            mute: function() {
-                while (!PlaybackModel.get('muted') || PlaybackModel.get('mutedOnce'))
-                    volume.onClick();
-            },
-            muteOnce: function() {
-                while (!PlaybackModel.get('mutedOnce'))
-                    volume.onClick();
-            },
-            unmute: function() {
-                while (PlaybackModel.get('muted'))
-                    volume.onClick();
-            },
-            close: function() {}
-        });
-    }
+            setTimeout(function() {
+                $('#volume').remove();
+                volume = new VolumeView(that);
+                $('#now-playing-bar').append(volume.$el);
+                volume.render();
+            }, 1);
+        },
+        onVolumeChange: function() {
+            PlaybackModel.onVolumeChange();
+        },
+        get: function(key) {
+            return PlaybackModel.get(key);
+        },
+        set: function(key, value) {
+            PlaybackModel.set(key, value);
+        },
+        mute: function() {
+            while (!PlaybackModel.get('muted') || PlaybackModel.get('mutedOnce'))
+                volume.onClick();
+        },
+        muteOnce: function() {
+            while (!PlaybackModel.get('mutedOnce'))
+                volume.onClick();
+        },
+        unmute: function() {
+            while (PlaybackModel.get('muted'))
+                volume.onClick();
+        },
+        close: function() {}
+    });
 
     return new handler();
 });
-define('b9a9d4/cae789', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/b2e27d', 'b9a9d4/f24d95/e2730c'], function(Class, p3Utils, p3Lang, Styles, PlaybackModel) {
-    var names = [],
-        curVersion;
+
+define('ad77cc/abe93c',['ad77cc/b9ec20', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/c6be2b', 'ad77cc/d2f21b/c7ef85'], function(Class, p3Utils, p3Lang, Styles, PlaybackModel) {
+    var names = [], curVersion;
 
     // Misc
     names.push('version');
@@ -1273,7 +1277,7 @@ define('b9a9d4/cae789', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a
             default:
                 break;
         }
-        console.log('[plug³] Updated save', save.version, '=>', curVersion);
+        console.log('[plugÂł] Updated save', save.version, '=>', curVersion);
         save.version = curVersion;
         return save;
     }
@@ -1436,7 +1440,7 @@ define('b9a9d4/cae789', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a
                  */
 
                 if (this.twitchEmotes) {
-                    require('b9a9d4/d0cf31/f82544').loadTwitchEmotes();
+                    require('ad77cc/e96f5a/a61113').loadTwitchEmotes();
                 }
 
                 if (this.registeredSongs.length > 0 && API.getMedia() != null && this.registeredSongs.indexOf(API.getMedia().id) > -1) {
@@ -1450,7 +1454,7 @@ define('b9a9d4/cae789', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a
                     Styles.set('etaTimer', '#your-next-media .song { top: 8px!important; }');
                 }
             } catch (e) {
-                console.error('[plug³] Error loading settings', e);
+                console.error('[plugÂł] Error loading settings', e);
                 p3Utils.chatLog('system', 'Error loading settings');
             }
         },
@@ -1466,7 +1470,7 @@ define('b9a9d4/cae789', ['b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a
     });
     return new controller();
 });
-define('b9a9d4/dd1fe1/f32896', [], function() {
+define('ad77cc/f76cc1/d4750a',[],function() {
     return {
         USER_JOIN: 1,
         USER_LEAVE: 2,
@@ -1479,95 +1483,93 @@ define('b9a9d4/dd1fe1/f32896', [], function() {
         SONG_UNAVAILABLE: 256
     };
 });
-define('b9a9d4/bdd18a/cf9f03', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
-    var history = [],
-        handler = TriggerHandler.extend({
-            trigger: {
-                advance: 'onDjAdvance',
-                modSkip: 'onSkip',
-                userSkip: 'onSkip',
-                voteSkip: 'onSkip'
-            },
-            register: function() {
-                this.getHistory();
-                this._super();
-            },
-            isInHistory: function(cid) {
-                var info = {
-                    pos: -1,
-                    inHistory: false,
-                    skipped: false,
-                    length: history.length
-                };
-                for (var i in history) {
-                    if (!history.hasOwnProperty(i)) continue;
-                    var a = history[i];
-                    if (a.cid == cid && (~~i + 1) < history.length) {
-                        info.pos = ~~i + 2;
-                        info.inHistory = true;
-                        if (!a.wasSkipped) {
-                            return info;
-                        }
+define('ad77cc/afb9e3/cb31a7',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+    var history = [], handler = TriggerHandler.extend({
+        trigger: {
+            advance: 'onDjAdvance',
+            modSkip: 'onSkip',
+            userSkip: 'onSkip',
+            voteSkip: 'onSkip'
+        },
+        register: function() {
+            this.getHistory();
+            this._super();
+        },
+        isInHistory: function(cid) {
+            var info = {
+                pos: -1,
+                inHistory: false,
+                skipped: false,
+                length: history.length
+            };
+            for (var i in history) {
+                if (!history.hasOwnProperty(i)) continue;
+                var a = history[i];
+                if (a.cid == cid && (~~i + 1) < history.length) {
+                    info.pos = ~~i + 2;
+                    info.inHistory = true;
+                    if (!a.wasSkipped) {
+                        return info;
                     }
-                }
-                info.skipped = info.pos > -1;
-                return info;
-            },
-            onHistoryCheck: function(cid) {
-                if ((!API.hasPermission(undefined, API.ROLE.BOUNCER) && !p3Utils.isPlugCubedDeveloper()) || (Settings.notify & enumNotifications.SONG_HISTORY) !== enumNotifications.SONG_HISTORY) return;
-                var historyData = this.isInHistory(cid);
-                if (historyData.inHistory) {
-                    if (!historyData.skipped) {
-                        p3Utils.playMentionSound();
-                        setTimeout(p3Utils.playMentionSound, 50);
-                        p3Utils.chatLog('system', p3Lang.i18n('notify.message.history', historyData.pos, historyData.length) + '<br><span onclick="if (API.getMedia().cid === \'' + cid + '\') API.moderateForceSkip()" style="cursor:pointer;">Click here to skip</span>', undefined, -1);
-                    } else {
-                        p3Utils.chatLog('system', p3Lang.i18n('notify.message.historySkipped', historyData.pos, historyData.length), undefined, -1);
-                    }
-                }
-            },
-            onDjAdvance: function(data) {
-                if (data.media == null) return;
-                this.onHistoryCheck(data.media.cid);
-                var obj = {
-                    id: data.media.cid,
-                    author: data.media.author,
-                    title: data.media.title,
-                    wasSkipped: false,
-                    user: {
-                        id: data.dj.id,
-                        username: data.dj.username
-                    }
-                };
-                if (history.unshift(obj) > 50)
-                    history.splice(50, history.length - 50);
-            },
-            onSkip: function() {
-                history[1].wasSkipped = true;
-            },
-            getHistory: function() {
-                history = [];
-                var data = API.getHistory();
-                for (var i in data) {
-                    if (!data.hasOwnProperty(i)) continue;
-                    var a = data[i],
-                        obj = {
-                            cid: a.media.cid,
-                            author: a.media.author,
-                            title: a.media.title,
-                            wasSkipped: false,
-                            dj: {
-                                id: a['user'].id.toString(),
-                                username: a['user'].username
-                            }
-                        };
-                    history.push(obj);
                 }
             }
-        });
+            info.skipped = info.pos > -1;
+            return info;
+        },
+        onHistoryCheck: function(cid) {
+            if ((!API.hasPermission(undefined, API.ROLE.BOUNCER) && !p3Utils.isPlugCubedDeveloper()) || (Settings.notify & enumNotifications.SONG_HISTORY) !== enumNotifications.SONG_HISTORY) return;
+            var historyData = this.isInHistory(cid);
+            if (historyData.inHistory) {
+                if (!historyData.skipped) {
+                    p3Utils.playMentionSound();
+                    setTimeout(p3Utils.playMentionSound, 50);
+                    p3Utils.chatLog('system', p3Lang.i18n('notify.message.history', historyData.pos, historyData.length) + '<br><span onclick="if (API.getMedia().cid === \'' + cid + '\') API.moderateForceSkip()" style="cursor:pointer;">Click here to skip</span>', undefined, -1);
+                } else {
+                    p3Utils.chatLog('system', p3Lang.i18n('notify.message.historySkipped', historyData.pos, historyData.length), undefined, -1);
+                }
+            }
+        },
+        onDjAdvance: function(data) {
+            if (data.media == null) return;
+            this.onHistoryCheck(data.media.cid);
+            var obj = {
+                id: data.media.cid,
+                author: data.media.author,
+                title: data.media.title,
+                wasSkipped: false,
+                user: {
+                    id: data.dj.id,
+                    username: data.dj.username
+                }
+            };
+            if (history.unshift(obj) > 50)
+                history.splice(50, history.length - 50);
+        },
+        onSkip: function() {
+            history[1].wasSkipped = true;
+        },
+        getHistory: function() {
+            history = [];
+            var data = API.getHistory();
+            for (var i in data) {
+                if (!data.hasOwnProperty(i)) continue;
+                var a = data[i], obj = {
+                    cid: a.media.cid,
+                    author: a.media.author,
+                    title: a.media.title,
+                    wasSkipped: false,
+                    dj: {
+                        id: a['user'].id.toString(),
+                        username: a['user'].username
+                    }
+                };
+                history.push(obj);
+            }
+        }
+    });
     return new handler();
 });
-define('b9a9d4/bdd18a/fb4622', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/e71bcf',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.ADVANCE,
         handler: function(data) {
@@ -1580,7 +1582,7 @@ define('b9a9d4/bdd18a/fb4622', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/bdd18a/d2edc4', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/beae79',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.ADVANCE,
         handler: function(data) {
@@ -1590,7 +1592,7 @@ define('b9a9d4/bdd18a/d2edc4', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/bdd18a/b288b3', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/f25d85',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.ADVANCE,
         handler: function(data) {
@@ -1600,7 +1602,7 @@ define('b9a9d4/bdd18a/b288b3', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/bdd18a/cbe5fe', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/c30a4c',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.GRAB_UPDATE,
         handler: function(data) {
@@ -1611,42 +1613,40 @@ define('b9a9d4/bdd18a/cbe5fe', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/bdd18a/db275a', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
-    var lastJoin = {},
-        handler = TriggerHandler.extend({
-            trigger: API.USER_JOIN,
-            handler: function(data) {
-                if ((Settings.notify & enumNotifications.USER_JOIN) === enumNotifications.USER_JOIN && (lastJoin[data.id] == null || lastJoin[data.id] < Date.now() - 5e3)) {
-                    // TODO: Add check if friend
-                    p3Utils.chatLog(undefined, p3Lang.i18n('notify.message.join'), Settings.colors.join || Settings.colorInfo.notifications.join.color, data.id, data.username);
-                }
-
-                lastJoin[data.id] = Date.now();
-
-                if (p3Utils.getUserData(data.id, 'joinTime', 0) === 0)
-                    p3Utils.setUserData(data.id, 'joinTime', Date.now());
+define('ad77cc/afb9e3/ea73ea',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+    var lastJoin = {}, handler = TriggerHandler.extend({
+        trigger: API.USER_JOIN,
+        handler: function(data) {
+            if ((Settings.notify & enumNotifications.USER_JOIN) === enumNotifications.USER_JOIN && (lastJoin[data.id] == null || lastJoin[data.id] < Date.now() - 5e3)) {
+                // TODO: Add check if friend
+                p3Utils.chatLog(undefined, p3Lang.i18n('notify.message.join'), Settings.colors.join || Settings.colorInfo.notifications.join.color, data.id, data.username);
             }
-        });
+
+            lastJoin[data.id] = Date.now();
+
+            if (p3Utils.getUserData(data.id, 'joinTime', 0) === 0)
+                p3Utils.setUserData(data.id, 'joinTime', Date.now());
+        }
+    });
     return new handler();
 });
-define('b9a9d4/bdd18a/b4b510', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
-    var lastLeave = {},
-        handler = TriggerHandler.extend({
-            trigger: API.USER_LEAVE,
-            handler: function(data) {
-                var disconnects = p3Utils.getUserData(data.id, 'disconnects', {
-                    count: 0
-                });
-                if ((Settings.notify & enumNotifications.USER_LEAVE) === enumNotifications.USER_LEAVE && (disconnects.time == null || Date.now() - disconnects.time < 1000) && (lastLeave[data.id] == null || lastLeave[data.id] < Date.now() - 5e3)) {
-                    // TODO: Add check if friend
-                    p3Utils.chatLog(undefined, p3Lang.i18n('notify.message.leave'), Settings.colors.leave || Settings.colorInfo.notifications.leave.color, data.id, data.username);
-                }
-                lastLeave[data.id] = Date.now();
+define('ad77cc/afb9e3/e6f5cf',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+    var lastLeave = {}, handler = TriggerHandler.extend({
+        trigger: API.USER_LEAVE,
+        handler: function(data) {
+            var disconnects = p3Utils.getUserData(data.id, 'disconnects', {
+                count: 0
+            });
+            if ((Settings.notify & enumNotifications.USER_LEAVE) === enumNotifications.USER_LEAVE && (disconnects.time == null || Date.now() - disconnects.time < 1000) && (lastLeave[data.id] == null || lastLeave[data.id] < Date.now() - 5e3)) {
+                // TODO: Add check if friend
+                p3Utils.chatLog(undefined, p3Lang.i18n('notify.message.leave'), Settings.colors.leave || Settings.colorInfo.notifications.leave.color, data.id, data.username);
             }
-        });
+            lastLeave[data.id] = Date.now();
+        }
+    });
     return new handler();
 });
-define('b9a9d4/bdd18a/a6e869', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/a0c199',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function(TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.VOTE_UPDATE,
         handler: function(data) {
@@ -1656,10 +1656,10 @@ define('b9a9d4/bdd18a/a6e869', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/bdd18a/e9ea41', ['jquery', 'b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/dd1fe1/f32896'], function($, TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
+define('ad77cc/afb9e3/f31e6b',['jquery', 'ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/f76cc1/d4750a'], function ($, TriggerHandler, Settings, p3Utils, p3Lang, enumNotifications) {
     var handler = TriggerHandler.extend({
         trigger: API.ADVANCE,
-        handler: function(data) {
+        handler: function (data) {
             return;
             if ((Settings.notify & enumNotifications.SONG_UNAVAILABLE) === enumNotifications.SONG_UNAVAILABLE) {
                 var url;
@@ -1672,7 +1672,7 @@ define('b9a9d4/bdd18a/e9ea41', ['jquery', 'b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789
                     url: url,
                     dataType: 'json',
                     crossDomain: true,
-                    success: function(response) {
+                    success: function (response) {
                         var final;
                         if (data.media.format === 1) {
                             if (response.data.accessControl.embed === 'denied') {
@@ -1689,7 +1689,7 @@ define('b9a9d4/bdd18a/e9ea41', ['jquery', 'b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789
                             p3Utils.chatLog('system', p3Lang.i18n(final) + '<br><span onclick="if (API.getMedia().cid === \'' + data.media.cid + '\') API.moderateForceSkip()" style="cursor:pointer;">Click here to skip</span>', undefined, -1);
                         }
                     },
-                    error: function(response) {
+                    error: function (response) {
                         var final;
                         if (data.media.format === 1) {
                             if (response.status === 403 && response.responseJSON.error.message === 'Private video') {
@@ -1716,7 +1716,7 @@ define('b9a9d4/bdd18a/e9ea41', ['jquery', 'b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789
     });
     return new handler();
 });
-define('b9a9d4/f32896', ['b9a9d4/fa8cfc', 'b9a9d4/bdd18a/cf9f03', 'b9a9d4/bdd18a/fb4622', 'b9a9d4/bdd18a/d2edc4', 'b9a9d4/bdd18a/b288b3', 'b9a9d4/bdd18a/cbe5fe', 'b9a9d4/bdd18a/db275a', 'b9a9d4/bdd18a/b4b510', 'b9a9d4/bdd18a/a6e869', 'b9a9d4/bdd18a/cf9f03', 'b9a9d4/bdd18a/e9ea41'], function() {
+define('ad77cc/d4750a',['ad77cc/b9ec20', 'ad77cc/afb9e3/cb31a7', 'ad77cc/afb9e3/e71bcf', 'ad77cc/afb9e3/beae79', 'ad77cc/afb9e3/f25d85', 'ad77cc/afb9e3/c30a4c', 'ad77cc/afb9e3/ea73ea', 'ad77cc/afb9e3/e6f5cf', 'ad77cc/afb9e3/a0c199', 'ad77cc/afb9e3/cb31a7', 'ad77cc/afb9e3/f31e6b'], function() {
     var modules, Class, handler;
 
     modules = $.makeArray(arguments);
@@ -1740,13 +1740,13 @@ define('b9a9d4/f32896', ['b9a9d4/fa8cfc', 'b9a9d4/bdd18a/cf9f03', 'b9a9d4/bdd18a
 
     return new handler();
 });
-define('b9a9d4/cbfab5', [], function() {
+define('ad77cc/c6b257',[],function() {
     return {
         major: 4,
         minor: 0,
-        patch: 6,
-        prerelease: "",
-        build: 2,
+        patch: 9,
+        prerelease: "release",
+        build: 4,
         minified: false,
         /**
          * @this {version}
@@ -1756,8 +1756,14 @@ define('b9a9d4/cbfab5', [], function() {
         }
     }
 });
-define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/b2e27d', 'b9a9d4/cae789', 'b9a9d4/f24d95/f84645', 'lang/Lang'], function($, Class, p3Utils, p3Lang, Styles, Settings, Context, Lang) {
-    var RoomModel, handler, showMessage, oriLang, langKeys, ranks, that;
+define('ad77cc/d2f21b/ec9451',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
+    return ModuleLoader.getModule({
+        PLAYLIST_OFFSET: 'number'
+    });
+});
+
+define('ad77cc/b556f2',['jquery', 'underscore', 'ad77cc/b9ec20', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/c6be2b', 'ad77cc/abe93c', 'ad77cc/d2f21b/d2d797', 'ad77cc/d2f21b/ec9451', 'ad77cc/cdfb8c', 'lang/Lang'], function($, _, Class, p3Utils, p3Lang, Styles, Settings, Context, Layout, ModuleLoader, Lang) {
+    var RoomModel, RoomLoader, handler, showMessage, oriLang, langKeys, ranks, that;
 
     /**
      * @property {{ background: String, chat: { admin: String, ambassador: String, bouncer: String, cohost: String, residentdj: String, host: String, manager: String }, footer: String, header: String }} colors
@@ -1768,7 +1774,6 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
      * @property {String|undefined} roomscript
      */
     var roomSettings;
-
     showMessage = false;
     oriLang = $.extend(true, {}, Lang);
     langKeys = $.map(oriLang, function(v, i) {
@@ -1781,9 +1786,14 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
         }
     });
     ranks = ['admin', 'ambassador', 'bouncer', 'cohost', 'residentdj', 'leader', 'host', 'manager', 'volunteer'];
-
-    if (!p3Utils.runLite)
-        RoomModel = require('d5eda/b4d5c/b395d');
+    RoomLoader = ModuleLoader.getView({
+        isBackbone: true,
+        className: 'loading-box'
+    });
+    RoomModel = ModuleLoader.getView({
+        isBackbone: true,
+        isModel: true
+    });
 
     function getPlugDJLang(key, original) {
         if (!key) return '';
@@ -1822,19 +1832,28 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
     }
 
     function parseDescription(description) {
+        var isRCS = false;
         if (description.indexOf('@p3=') > -1) {
             description = description.substr(description.indexOf('@p3=') + 4);
-            if (description.indexOf('\n') > -1)
-                description = description.substr(0, description.indexOf('\n'));
-            $.getJSON(description + '?_' + Date.now(), function(settings) {
-                roomSettings = settings;
-                showMessage = true;
-                that.execute();
-            }).fail(function() {
-                API.chatLog('Error loading Room Settings', true);
-            });
-            that.haveRoomSettings = true;
+        } else if (description.indexOf('@rcs=') > -1) {
+            description = description.substr(description.indexOf('@rcs=') + 5);
+            isRCS = true;
+        } else {
+            return;
         }
+        if (description.indexOf('\n') > -1)
+            description = description.substr(0, description.indexOf('\n'));
+        $.getJSON(p3Utils.html2text(description) + '?=' + Date.now(), function(settings) {
+            roomSettings = settings;
+            if (isRCS) {
+                roomSettings = that.convertRCSToPlugCubed(settings);
+            }
+            showMessage = true;
+            that.execute();
+        }).fail(function() {
+            API.chatLog('Error loading Room Settings', true);
+        });
+        that.haveRoomSettings = true;
     }
 
     handler = Class.extend({
@@ -1848,30 +1867,42 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
         chatIcons: {},
         init: function() {
             that = this;
-            if (!p3Utils.runLite) {
-                Context.on('room:joining', this.clear, this);
-                Context.on('room:joined', this.update, this);
-            }
+            Context.on('room:joining', this.clear, this);
+            Context.on('room:joined', this.update, this);
         },
         update: function() {
-            if (!p3Utils.runLite) {
-                parseDescription(p3Utils.cleanHTML(RoomModel.get('description')));
-            } else {
-                $.getJSON('/_/rooms/state', function(msg) {
-                    if (msg.status == 'ok') {
-                        parseDescription(msg.data[0].meta.description);
-                    } else {
-                        API.chatLog('Error loading Room Description', true);
-                    }
-                });
+            parseDescription(p3Utils.cleanHTML(RoomModel.get('description')));
+        },
+        /**
+        * Converts RCS CCS to P3 RSS Format. Written by ReAnna.
+        **/
+        convertRCSToPlugCubed: function(ccs) {
+            var rs = _.clone(ccs);
+            var colors = ccs.ccc;
+            var images = ccs.images;
+            if (ccs.css) {
+                rs.css = {
+                    import: [ccs.css]
+                };
             }
+            if (colors) {
+                rs.colors = rs.colors || {};
+                rs.colors.chat = _.omit(colors, 'rdj');
+                if (colors.rdj) rs.colors.chat.residentdj = colors.rdj;
+            }
+            if (images) {
+                rs.images = _.clone(images);
+                rs.images.icons = _.omit(images, 'background', 'playback', 'rdj');
+                if (images.rdj) rs.images.icons.residentdj = images.rdj;
+            }
+
+            return rs;
         },
         execute: function() {
             var i, a, loadEverything;
             loadEverything = Settings.useRoomSettings[document.location.pathname.split('/')[1]] != null ? Settings.useRoomSettings[document.location.pathname.split('/')[1]] : true;
 
             this.clear();
-
             if (roomSettings != null) {
                 if (loadEverything) {
                     // colors
@@ -1962,14 +1993,13 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
                             playbackBackground.data('_o', playbackBackground.attr('src'));
 
                         if (roomSettings.images.playback != null) {
-                            if (!p3Utils.runLite && typeof roomSettings.images.playback === 'string' && roomSettings.images.playback.indexOf('http') === 0) {
-                                var roomLoader = require('d5eda/a37c8/caebc/c1313');
-                                var playbackFrame = new Image;
+                            if (typeof roomSettings.images.playback === 'string' && roomSettings.images.playback.indexOf('http') === 0) {
+                                var playbackFrame = new Image();
                                 playbackFrame.onload = function() {
                                     playbackBackground.attr('src', this.src);
-                                    roomLoader.frameHeight = this.height - 10;
-                                    roomLoader.frameWidth = this.width - 18;
-                                    roomLoader.onVideoResize(require('d5eda/fd6bf/b5d0c').getSize());
+                                    RoomLoader.frameHeight = this.height - 10;
+                                    RoomLoader.frameWidth = this.width - 18;
+                                    RoomLoader.onVideoResize(Layout.getSize());
                                 };
                                 playbackFrame.src = p3Utils.proxifyImage(roomSettings.images.playback);
                             } else if (roomSettings.images.playback === false) {
@@ -2042,10 +2072,10 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
                     showMessage = false;
                 }
 
-                require('b9a9d4/cb529e').update();
+                require('ad77cc/ca7719').update();
 
                 // Redraw menu
-                require('b9a9d4/a0a096/b36ec9').createMenu();
+                require('ad77cc/c8f2b6/d8c4df').createMenu();
             }
         },
         clear: function() {
@@ -2068,25 +2098,20 @@ define('b9a9d4/a043fc', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba7
                 playbackBackground.data('_o', playbackBackground.attr('src'));
             playbackBackground.attr('src', playbackBackground.data('_o'));
             playbackBackground.show();
-            if (!p3Utils.runLite) {
-                var roomLoader = require('d5eda/a37c8/caebc/c1313');
-                roomLoader.frameHeight = playbackBackground.height() - 10;
-                roomLoader.frameWidth = playbackBackground.width() - 18;
-                roomLoader.onVideoResize(require('d5eda/fd6bf/b5d0c').getSize());
-            }
+            RoomLoader.frameHeight = playbackBackground.height() - 10;
+            RoomLoader.frameWidth = playbackBackground.width() - 18;
+            RoomLoader.onVideoResize(Layout.getSize());
         },
         close: function() {
-            if (!p3Utils.runLite) {
-                Context.off('room:joining', this.clear, this);
-                Context.off('room:joined', this.update, this);
-            }
-
+            Context.off('room:joining', this.clear, this);
+            Context.off('room:joined', this.update, this);
             this.clear();
         }
     });
     return new handler();
 });
-define('b9a9d4/d5597e', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
+
+define('ad77cc/cd9a55',['jquery', 'ad77cc/b9ec20'], function($, Class) {
     return Class.extend({
         init: function(min, max, val, callback) {
             this.min = min ? min : 0;
@@ -2136,7 +2161,7 @@ define('b9a9d4/d5597e', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
         }
     });
 });
-define('b9a9d4/cb529e', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/a043fc', 'b9a9d4/b2e27d', 'b9a9d4/cae789', 'b9a9d4/fd4984'], function($, Class, RoomSettings, Styles, Settings, p3Utils) {
+define('ad77cc/ca7719',['jquery', 'ad77cc/b9ec20', 'ad77cc/b556f2', 'ad77cc/c6be2b', 'ad77cc/abe93c', 'ad77cc/b9e264'], function($, Class, RoomSettings, Styles, Settings, p3Utils) {
     var handler = Class.extend({
         update: function() {
             var useRoomSettings = Settings.useRoomSettings[document.location.pathname.split('/')[1]];
@@ -2192,30 +2217,30 @@ define('b9a9d4/cb529e', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/a043fc', 'b9a9d4/b2e
 
     return new handler();
 });
-define('b9a9d4/a0a096/cb529e', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a9d4/cb529e', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/f24d95/f84645'], function($, Class, p3Lang, CCC, Settings, p3Utils, _$context) {
+define('ad77cc/c8f2b6/ca7719',['jquery', 'ad77cc/b9ec20', 'ad77cc/e30d36', 'ad77cc/ca7719', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/d2f21b/d2d797'], function($, Class, p3Lang, CCC, Settings, p3Utils, _$context) {
     function GUIInput(id, text, defaultColor) {
         if (!Settings.colors[id])
             Settings.colors[id] = defaultColor;
         return $('<div class="item">').addClass('p3-s-cc-' + id).append($('<span>').text(text)).append($('<span>').addClass('default').css('display', Settings.colors[id] === defaultColor ? 'none' : 'block').mouseover(function() {
-            _$context.trigger('tooltip:show', p3Lang.i18n('tooltip.reset'), $(this), false);
-        }).mouseout(function() {
-            _$context.trigger('tooltip:hide');
-        }).click(function() {
-            $(this).parent().find('input').val(defaultColor);
-            $(this).parent().find('.example').css('background-color', p3Utils.toRGB(defaultColor));
-            $(this).css('display', 'none');
-            Settings.colors[id] = defaultColor;
-            Settings.save();
-            CCC.update();
-        })).append($('<span>').addClass('example').css('background-color', p3Utils.toRGB(Settings.colors[id]))).append($('<input>').val(Settings.colors[id]).keyup(function() {
-            if (p3Utils.isRGB($(this).val())) {
-                $(this).parent().find('.example').css('background-color', p3Utils.toRGB($(this).val()));
-                Settings.colors[id] = $(this).val();
+                _$context.trigger('tooltip:show', p3Lang.i18n('tooltip.reset'), $(this), false);
+            }).mouseout(function() {
+                _$context.trigger('tooltip:hide');
+            }).click(function() {
+                $(this).parent().find('input').val(defaultColor);
+                $(this).parent().find('.example').css('background-color', p3Utils.toRGB(defaultColor));
+                $(this).css('display', 'none');
+                Settings.colors[id] = defaultColor;
                 Settings.save();
                 CCC.update();
-            }
-            $(this).parent().find('.default').css('display', $(this).val() === defaultColor ? 'none' : 'block');
-        }));
+            })).append($('<span>').addClass('example').css('background-color', p3Utils.toRGB(Settings.colors[id]))).append($('<input>').val(Settings.colors[id]).keyup(function() {
+                if (p3Utils.isRGB($(this).val())) {
+                    $(this).parent().find('.example').css('background-color', p3Utils.toRGB($(this).val()));
+                    Settings.colors[id] = $(this).val();
+                    Settings.save();
+                    CCC.update();
+                }
+                $(this).parent().find('.default').css('display', $(this).val() === defaultColor ? 'none' : 'block');
+            }));
     }
 
     var div, a = Class.extend({
@@ -2244,10 +2269,10 @@ define('b9a9d4/a0a096/cb529e', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
                     container.append(GUIInput(i, p3Lang.i18n(Settings.colorInfo.notifications[i].title), Settings.colorInfo.notifications[i].color));
             }
             div = $('<div id="p3-settings-custom-colors" style="left: -500px;">').append($('<div class="header">').append($('<div class="back">').append($('<i class="icon icon-arrow-left"></i>')).click(function() {
-                if (div != null) div.animate({
-                    left: -500
-                });
-            })).append($('<div class="title">').append($('<span>').text(p3Lang.i18n('menu.customchatcolors'))))).append(container).animate({
+                    if (div != null) div.animate({
+                        left: -500
+                    });
+                })).append($('<div class="title">').append($('<span>').text(p3Lang.i18n('menu.customchatcolors'))))).append(container).animate({
                 left: $settings.width() + 1
             });
             $('#p3-settings-wrapper').append(div);
@@ -2260,13 +2285,12 @@ define('b9a9d4/a0a096/cb529e', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
     });
     return new a();
 });
-define('b9a9d4/a0a096/e35dcc', ['jquery', 'underscore', 'b9a9d4/fa8cfc'], function($, _, Class) {
+define('ad77cc/c8f2b6/d0a417',['jquery', 'underscore', 'ad77cc/b9ec20'], function($, _, Class) {
     var ControlPanelClass, JQueryElementClass;
 
     var PanelClass, ButtonClass, InputClass;
 
-    var $controlPanelDiv, $topBarDiv, $menuDiv, $currentDiv, $closeDiv, scrollPane, shownHeight, tabs = {},
-        _this, _onResize, _onTabClick;
+    var $controlPanelDiv, $topBarDiv, $menuDiv, $currentDiv, $closeDiv, scrollPane, shownHeight, tabs = {}, _this, _onResize, _onTabClick;
 
     JQueryElementClass = Class.extend({
         getJQueryElement: function() {
@@ -2414,8 +2438,7 @@ define('b9a9d4/a0a096/e35dcc', ['jquery', 'underscore', 'b9a9d4/fa8cfc'], functi
          */
         inputField: function(type, label, placeholder) {
             return new InputClass(type, label, placeholder);
-        },
-        /**
+        }, /**
          * @callback onButtonClick
          * @param {object}
          */
@@ -2434,8 +2457,7 @@ define('b9a9d4/a0a096/e35dcc', ['jquery', 'underscore', 'b9a9d4/fa8cfc'], functi
         },
         onResize: function() {
             if ($controlPanelDiv == null) return;
-            var $panel = $('#playlist-panel'),
-                shownHeight = $(window).height() - 150;
+            var $panel = $('#playlist-panel'), shownHeight = $(window).height() - 150;
 
             $controlPanelDiv.css({
                 width: $panel.width(),
@@ -2523,7 +2545,7 @@ define('b9a9d4/a0a096/e35dcc', ['jquery', 'underscore', 'b9a9d4/fa8cfc'], functi
     });
     return new ControlPanelClass();
 });
-define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/cae789', 'b9a9d4/f24d95/f84645', 'b9a9d4/f24d95/c7a802'], function($, Class, p3Utils, p3Lang, Settings, _$context, PopoutView) {
+define('ad77cc/e96f5a/a61113',['jquery', 'ad77cc/b9ec20', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/abe93c', 'ad77cc/d2f21b/d2d797', 'ad77cc/d2f21b/b0411a'], function($, Class, p3Utils, p3Lang, Settings, _$context, PopoutView) {
 
     var twitchEmoteTemplate = '',
         twitchEmotes = [];
@@ -2566,8 +2588,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                                 $video.on('load', function() {
                                     var $chat = PopoutView && PopoutView._window ? $(PopoutView._window.document).find('#chat-messages') : $('#chat-messages'),
                                         height = this.height;
-                                    if (this.width > $chat.find('.message').width())
-                                        height *= this.width / $chat.find('.message').width();
+                                    if (this.width > $chat.find('.message').width()) height *= this.width / $chat.find('.message').width();
                                     $chat.scrollTop($chat[0].scrollHeight + height);
                                 });
 
@@ -2582,9 +2603,9 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
 
                                     var webmUrl, mp4Url, imgUrl;
 
-                                    webmUrl = p3Utils.httpsifyURL(videoData['gfyItem']['webmUrl']);
-                                    mp4Url = p3Utils.httpsifyURL(videoData['gfyItem']['mp4Url']);
-                                    imgUrl = p3Utils.httpsifyURL(videoData['gfyItem']['gifUrl']);
+                                    webmUrl = p3Utils.httpsifyURL(videoData.gfyItem.webmUrl);
+                                    mp4Url = p3Utils.httpsifyURL(videoData.gfyItem.mp4Url);
+                                    imgUrl = p3Utils.httpsifyURL(videoData.gfyItem.gifUrl);
 
                                     $video.append($('<source>').attr('type', 'video/webm').attr('src', webmUrl));
                                     $video.append($('<source>').attr('type', 'video/mp4').attr('src', mp4Url));
@@ -2598,8 +2619,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                         path = url.split('/');
                         if (path.length > 3) {
                             path = path[3];
-                            if (path.trim().length !== 0)
-                                imageURL = 'https://api.plugCubed.net/redirect/prntscr/' + path;
+                            if (path.trim().length !== 0) imageURL = 'https://api.plugCubed.net/redirect/prntscr/' + path;
                         }
 
                         // Imgur links
@@ -2617,8 +2637,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                                 $video.on('load', function() {
                                     var $chat = PopoutView && PopoutView._window ? $(PopoutView._window.document).find('#chat-messages') : $('#chat-messages'),
                                         height = this.height;
-                                    if (this.width > $chat.find('.message').width())
-                                        height *= this.width / $chat.find('.message').width();
+                                    if (this.width > $chat.find('.message').width()) height *= this.width / $chat.find('.message').width();
                                     $chat.scrollTop($chat[0].scrollHeight + height);
                                 });
 
@@ -2631,14 +2650,12 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                                         return;
                                     }
 
-                                    if (imgurData['webm'] != null)
-                                        $video.append($('<source>').attr('type', 'video/webm').attr('src', p3Utils.httpsifyURL(imgurData['webm'])));
+                                    if (imgurData.webm != null) $video.append($('<source>').attr('type', 'video/webm').attr('src', p3Utils.httpsifyURL(imgurData.webm)));
 
-                                    if (imgurData['webm'] != null)
-                                        $video.append($('<source>').attr('type', 'video/mp4').attr('src', p3Utils.httpsifyURL(imgurData['mp4'])));
+                                    if (imgurData.mp4 != null) $video.append($('<source>').attr('type', 'video/mp4').attr('src', p3Utils.httpsifyURL(imgurData.mp4)));
 
-                                    $video.attr('poster', p3Utils.httpsifyURL(imgurData['link']));
-                                    $video.append($('<img>').attr('src', p3Utils.httpsifyURL(imgurData['link'])));
+                                    $video.attr('poster', p3Utils.httpsifyURL(imgurData.link));
+                                    $video.append($('<img>').attr('src', p3Utils.httpsifyURL(imgurData.link)));
                                 });
                             }
                         }
@@ -2648,8 +2665,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                         path = url.split('/');
                         if (path.length > 3) {
                             path = path[3];
-                            if (path.trim().length !== 0)
-                                imageURL = 'https://i.gyazo.com/' + path + '.png';
+                            if (path.trim().length !== 0) imageURL = 'https://i.gyazo.com/' + path + '.png';
                         }
                     } else {
                         // DeviantArt links
@@ -2669,8 +2685,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                         image.on('load', function() {
                             var $chat = PopoutView && PopoutView._window ? $(PopoutView._window.document).find('#chat-messages') : $('#chat-messages'),
                                 height = this.height;
-                            if (this.width > $chat.find('.message').width())
-                                height *= this.width / $chat.find('.message').width();
+                            if (this.width > $chat.find('.message').width()) height *= this.width / $chat.find('.message').width();
                             $chat.scrollTop($chat[0].scrollHeight + height);
                         });
                     }
@@ -2694,8 +2709,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                     image.on('load', function() {
                         var $chat = PopoutView && PopoutView._window ? $(PopoutView._window.document).find('#chat-messages') : $('#chat-messages'),
                             height = this.height;
-                        if (this.width > $chat.find('.message').width())
-                            height *= this.width / $chat.find('.message').width();
+                        if (this.width > $chat.find('.message').width()) height *= this.width / $chat.find('.message').width();
                         $chat.scrollTop($chat[0].scrollHeight + height);
                     });
                     temp.append(image);
@@ -2711,7 +2725,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
     function onChatReceived(data) {
         if (!data.uid) return;
 
-        if (data.uid == API.getUser().id) {
+        if (data.uid === API.getUser().id) {
             var latestInputs = p3Utils.getUserData(-1, 'latestInputs', []);
             latestInputs.push(data.message);
             if (latestInputs.length > 10) {
@@ -2737,10 +2751,11 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
         if (!data.uid) return;
 
         var $this = $('.msg.cid-' + data.cid).closest('.cm'),
+            $msg = $('.msg .text.cid-' + data.cid),
             $icon;
 
         var previousMessages = '',
-            innerHTML = $this.find('.text').html();
+            innerHTML = $msg.html();
         if (innerHTML != null && innerHTML.indexOf('<br>') > -1) {
             previousMessages = innerHTML.substr(0, innerHTML.lastIndexOf('<br>') + 4);
         }
@@ -2773,7 +2788,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
             }
         }
 
-        if (data.uid == API.getUser().id) {
+        if (data.uid === API.getUser().id) {
             msgClass += ' from-you';
         }
 
@@ -2806,22 +2821,22 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
         }
 
         $this.attr('class', msgClass);
-        $this.find('.text').html(previousMessages + p3Utils.cleanHTML(data.message, ['div', 'table', 'tr', 'td'], ['img', 'video', 'source']));
+        $msg.html(previousMessages + p3Utils.cleanHTML(data.message, ['div', 'table', 'tr', 'td'], ['img', 'video', 'source']));
 
         $this.data('translated', false);
         $this.dblclick(function(e) {
             if (!e.ctrlKey) return;
             if ($this.data('translated')) {
-                $this.find('.text').html(convertEmotes(convertImageLinks(data.message)));
+                $msg.html(previousMessages + convertEmotes(convertImageLinks(data.message)));
                 $this.data('translated', false);
             } else {
-                $this.find('.text').html('<em>Translating...</em>');
+                $msg.html('<em>Translating...</em>');
                 $.get('https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22http%3A%2F%2Ftranslate.google.com%2Ftranslate_a%2Ft%3Fclient%3Dp3%26sl%3Dauto%26tl%3D' + API.getUser().language + '%26ie%3DUTF-8%26oe%3DUTF-8%26q%3D' + encodeURIComponent(encodeURIComponent(data.message.replace('&nbsp;', ' '))) + '%22&format=json', function(a) {
                     if (a.error) {
-                        $this.find('.text').html(convertEmotes(convertImageLinks(data.message)));
+                        $msg.html(previousMessages + convertEmotes(convertImageLinks(data.message)));
                         $this.data('translated', false);
                     } else {
-                        $this.find('.text').html(convertEmotes(convertImageLinks(p3Utils.objectSelector(a, 'query.results.json.sentences.trans', data.message))));
+                        $msg.html(previousMessages + convertEmotes(convertImageLinks(p3Utils.objectSelector(a, 'query.results.json.sentences.trans', data.message))));
                         $this.data('translated', true);
                     }
                 }, 'json');
@@ -2831,8 +2846,7 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
     }
 
     function onChatDelete(cid) {
-        if ((!p3Utils.hasPermission(undefined, API.ROLE.BOUNCER) && !p3Utils.isPlugCubedDeveloper()) || !Settings.moderation.showDeletedMessages)
-            return;
+        if ((!p3Utils.hasPermission(undefined, API.ROLE.BOUNCER) && !p3Utils.isPlugCubedDeveloper()) || !Settings.moderation.showDeletedMessages) return;
 
         var $messages = $('.text.cid-' + cid);
 
@@ -2844,9 +2858,9 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
     }
 
     function onInputKeyUp(e) {
-        if (e.keyCode == 38) {
+        if (e.keyCode === 38) {
             onInputMove(true, $(this));
-        } else if (e.keyCode == 40) {
+        } else if (e.keyCode === 40) {
             onInputMove(false, $(this));
         }
     }
@@ -2878,15 +2892,15 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
                 twitchEmoteTemplate = data.template.small;
 
                 twitchEmotes = [];
-                for (var i in data['emotes']) {
-                    if (!data['emotes'].hasOwnProperty(i)) continue;
+                for (var i in data.emotes) {
+                    if (!data.emotes.hasOwnProperty(i)) continue;
                     twitchEmotes.push({
                         emote: i,
-                        image_id: data['emotes'][i].image_id
+                        image_id: data.emotes[i].image_id
                     });
                 }
 
-                console.log('[plug³]', twitchEmotes.length + ' Twitch.TV emoticons loaded!');
+                console.log('[plugÂł]', twitchEmotes.length + ' Twitch.TV emoticons loaded!');
             });
         },
         unloadTwitchEmotes: function() {
@@ -2912,7 +2926,8 @@ define('b9a9d4/d0cf31/f82544', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/fd4984', 'b9a
     });
     return new handler();
 });
-define('b9a9d4/d0cf31/c930d5', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a9d4/f24d95/f84645', 'b9a9d4/f24d95/e0756e'], function($, Class, p3Lang, Context, Database) {
+
+define('ad77cc/e96f5a/e58aff',['jquery', 'ad77cc/b9ec20', 'ad77cc/e30d36', 'ad77cc/d2f21b/d2d797', 'ad77cc/d2f21b/a1d195'], function($, Class, p3Lang, Context, Database) {
     var fullScreenButton;
     var handler = Class.extend({
         create: function() {
@@ -2930,7 +2945,7 @@ define('b9a9d4/d0cf31/c930d5', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
         toggleFullScreen: function() {
             Database.settings.videoOnly = !Database.settings.videoOnly;
             Context.trigger('change:videoOnly');
-            if (Database.settings.videoOnly) {
+            if (Database.settings.videoOnly ) {
                 fullScreenButton.find('.box').text(p3Lang.i18n('fullscreen.shrink'));
             } else {
                 fullScreenButton.find('.box').text(p3Lang.i18n('fullscreen.enlarge'));
@@ -2944,13 +2959,13 @@ define('b9a9d4/d0cf31/c930d5', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
     });
     return new handler();
 });
-define('b9a9d4/f24d95/da3b6b', ['b9a9d4/fd4984', 'b9a9d4/f1f282'], function(p3Utils, ModuleLoader) {
+define('ad77cc/d2f21b/ce19a5',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
     return ModuleLoader.getModule({
         dispatch: 'function'
     });
 });
 
-define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a9d4/dd1fe1/f32896', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/b2e27d', 'b9a9d4/a043fc', 'b9a9d4/d5597e', 'b9a9d4/a0a096/cb529e', 'b9a9d4/a0a096/e35dcc', 'b9a9d4/d0cf31/f82544', 'b9a9d4/d0cf31/c930d5', 'b9a9d4/f24d95/da3b6b', 'b9a9d4/f24d95/e0756e', 'lang/Lang'], function($, Class, Version, enumNotifications, Settings, p3Utils, p3Lang, Styles, RoomSettings, Slider, dialogColors, dialogControlPanel, ChatHandler, FullscreenHandler, Context, Database, Lang) {
+define('ad77cc/c8f2b6/d8c4df',['jquery', 'ad77cc/b9ec20', 'ad77cc/c6b257', 'ad77cc/f76cc1/d4750a', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/c6be2b', 'ad77cc/b556f2', 'ad77cc/cd9a55', 'ad77cc/c8f2b6/ca7719', 'ad77cc/c8f2b6/d0a417', 'ad77cc/e96f5a/a61113', 'ad77cc/e96f5a/e58aff', 'ad77cc/d2f21b/ce19a5', 'ad77cc/d2f21b/a1d195', 'lang/Lang'], function($, Class, Version, enumNotifications, Settings, p3Utils, p3Lang, Styles, RoomSettings, Slider, dialogColors, dialogControlPanel, ChatHandler, FullscreenHandler, Context, Database, Lang) {
 
     var $wrapper, $menuDiv, menuClass, _this, menuButton, streamButton, clearChatButton, _onClick;
 
@@ -2975,24 +2990,24 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
                 dialogControlPanel.toggleControlPanel(false);
             });
             $('#room-bar').css('left', 108).find('.favorite').css('right', 55);
-            $('#plugcubed .cube-wrap .cube').bind('webkitAnimationEnd mozAnimationEnd msAnimationEnd animationEnd', function() {
+            $('#plugcubed .cube-wrap .cube').bind('webkitAnimationEnd mozAnimationEnd msAnimationEnd animationEnd', function(){
                 $("#plugcubed .cube-wrap .cube").removeClass('spin');
             });
-            $('#plugcubed').mouseenter(function() {
+            $('#plugcubed').mouseenter(function(){
                 $('#plugcubed .cube-wrap .cube').addClass('spin');
             });
-            $('#chat-header').append(streamButton.click($.proxy(this.onClick, this)).mouseover(function() {
-                Context.trigger('tooltip:show', p3Lang.i18n('tooltip.stream'), $(this), true);
-            }).mouseout(function() {
-                Context.trigger('tooltip:hide');
-            })).append(clearChatButton.click($.proxy(this.onClick, this)).mouseover(function() {
-                Context.trigger('tooltip:show', p3Lang.i18n('tooltip.clear'), $(this), true);
-            }).mouseout(function() {
-                Context.trigger('tooltip:hide');
-            }));
-            this.onRoomJoin();
+                $('#chat-header').append(streamButton.click($.proxy(this.onClick, this)).mouseover(function() {
+                    Context.trigger('tooltip:show', p3Lang.i18n('tooltip.stream'), $(this), true);
+                }).mouseout(function() {
+                    Context.trigger('tooltip:hide');
+                })).append(clearChatButton.click($.proxy(this.onClick, this)).mouseover(function() {
+                    Context.trigger('tooltip:show', p3Lang.i18n('tooltip.clear'), $(this), true);
+                }).mouseout(function() {
+                    Context.trigger('tooltip:hide');
+                }));
+                this.onRoomJoin();
 
-            Context.on('room:joined', this.onRoomJoin, this);
+                Context.on('room:joined', this.onRoomJoin, this);
 
             FullscreenHandler.create();
         },
@@ -3087,7 +3102,7 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
                 case 'notify-updates':
                 case 'notify-history':
                 case 'notify-songLength':
-                    //case 'notify-unavailable':
+                case 'notify-unavailable':
                     var elem = $('.p3-s-' + a);
                     if (!elem.data('perm') || (API.hasPermission(undefined, elem.data('perm')) || p3Utils.isPlugCubedDeveloper())) {
                         var bit = elem.data('bit');
@@ -3107,9 +3122,15 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
                     var b = Settings.useRoomSettings[window.location.pathname.split('/')[1]];
                     b = !(b == null || b === true);
                     Settings.useRoomSettings[window.location.pathname.split('/')[1]] = b;
+                    if (b) RoomSettings.update();
                     RoomSettings.execute(b);
                     this.setEnabled('roomsettings', b);
                     break;
+                case 'showdeletedmessages':
+                  Settings.moderation.showDeletedMessages = !Settings.moderation.showDeletedMessages;
+                  this.setEnabled('showdeletedmessages', Settings.moderation.showDeletedMessages);
+                  console.log(Settings.moderation.showDeletedMessages);
+                  break;
                 case 'afktimers':
                     Settings.moderation.afkTimers = !Settings.moderation.afkTimers;
                     this.setEnabled('afktimers', Settings.moderation.afkTimers);
@@ -3155,8 +3176,7 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
             if ($menuDiv != null)
                 $menuDiv.remove();
             $menuDiv = $('<div>').css('left', this.shown ? 0 : -500).attr('id', 'p3-settings');
-            var header = $('<div>').addClass('header'),
-                container = $('<div>').addClass('container');
+            var header = $('<div>').addClass('header'), container = $('<div>').addClass('container');
 
             // Header
             header.append($('<div>').addClass('back').append($('<i>').addClass('icon icon-arrow-left')).click(function() {
@@ -3187,7 +3207,7 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
 
             if (p3Utils.isPlugCubedDeveloper() || API.hasPermission(undefined, API.ROLE.BOUNCER)) {
                 container.append(GUIButton(Settings.moderation.afkTimers, 'afktimers', p3Lang.i18n('menu.afktimers')));
-                //container.append(GUIButton(Settings.moderation.showDeletedMessages, 'showdeletedmessages', p3Lang.i18n('menu.showdeletedmessages')))
+                container.append(GUIButton(Settings.moderation.showDeletedMessages, 'showdeletedmessages', p3Lang.i18n('menu.showdeletedmessages')))
             }
 
             if (RoomSettings.haveRoomSettings) {
@@ -3223,7 +3243,7 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
                     $('.p3-s-notify-songLength').find('span').text(p3Lang.i18n('notify.songLength', v));
                 });
                 container.append(GUIButton((Settings.notify & enumNotifications.SONG_HISTORY) === enumNotifications.SONG_HISTORY, 'notify-history', p3Lang.i18n('notify.history')).data('bit', enumNotifications.SONG_HISTORY).data('perm', API.ROLE.BOUNCER));
-                //container.append(GUIButton((Settings.notify & enumNotifications.SONG_UNAVAILABLE) === enumNotifications.SONG_UNAVAILABLE, 'notify-unavailable', p3Lang.i18n('notify.songUnavailable')).data('bit', enumNotifications.SONG_UNAVAILABLE).data('perm', API.ROLE.BOUNCER));
+                container.append(GUIButton((Settings.notify & enumNotifications.SONG_UNAVAILABLE) === enumNotifications.SONG_UNAVAILABLE, 'notify-unavailable', p3Lang.i18n('notify.songUnavailable')).data('bit', enumNotifications.SONG_UNAVAILABLE).data('perm', API.ROLE.BOUNCER));
                 container.append(GUIButton((Settings.notify & enumNotifications.SONG_LENGTH) === enumNotifications.SONG_LENGTH, 'notify-songLength', p3Lang.i18n('notify.songLength', Settings.notifySongLength)).data('bit', enumNotifications.SONG_LENGTH).data('perm', API.ROLE.BOUNCER));
                 container.append(songLengthSlider.$slider.css('left', 40));
             }
@@ -3258,46 +3278,71 @@ define('b9a9d4/a0a096/b36ec9', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/cbfab5', 'b9a
     });
     return new menuClass();
 });
-define('b9a9d4/a0a096/d86c6d', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a9d4/fd4984'], function($, Class, p3Lang, p3Utils) {
+define('ad77cc/c8f2b6/d5e809',['jquery', 'ad77cc/b9ec20', 'ad77cc/e30d36', 'ad77cc/b9e264'], function($, Class, p3Lang, p3Utils) {
     var userCommands = [
-            ['/badges (commands.variables.on/commands.variables.off)', 'commands.descriptions.badges'],
-            ['/join', 'commands.descriptions.join'],
-            ['/leave', 'commands.descriptions.leave'],
-            ['/whoami', 'commands.descriptions.whoami'],
-            ['/mute', 'commands.descriptions.mute'],
-            ['/automute', 'commands.descriptions.automute'],
-            ['/unmute', 'commands.descriptions.unmute'],
-            ['/nextsong', 'commands.descriptions.nextsong'],
-            ['/refresh', 'commands.descriptions.refresh'],
-            ['/status', 'commands.descriptions.status'],
-            ['/alertson (commands.variables.word)', 'commands.descriptions.alertson'],
-            ['/alertsoff', 'commands.descriptions.alertsoff'],
-            ['/grab', 'commands.descriptions.grab'],
-            ['/getpos', 'commands.descriptions.getpos'],
-            ['/version', 'commands.descriptions.version'],
-            ['/commands', 'commands.descriptions.commands'],
-            ['/link', 'commands.descriptions.link'],
-            ['/volume (commands.variables.number/+/-)']
-        ],
-        modCommands = [
-            ['/whois (commands.variables.username)', 'commands.descriptions.whois', API.ROLE.BOUNCER],
-            ['/skip', 'commands.descriptions.skip', API.ROLE.BOUNCER],
-            ['/ban (commands.variables.username)', 'commands.descriptions.ban', API.ROLE.BOUNCER],
-            ['/lockskip', 'commands.descriptions.lockskip', API.ROLE.MANAGER],
-            ['/lock', 'commands.descriptions.lock', API.ROLE.MANAGER],
-            ['/unlock', 'commands.descriptions.unlock', API.ROLE.MANAGER],
-            ['/add (commands.variables.username)', 'commands.descriptions.add', API.ROLE.BOUNCER],
-            ['/remove (commands.variables.username)', 'commands.descriptions.remove', API.ROLE.BOUNCER],
-            ['/whois all', 'commands.descriptions.whois', API.ROLE.AMBASSADOR],
-            ['/banall', 'commands.descriptions.banall', API.ROLE.AMBASSADOR]
-        ],
-        a = Class.extend({
-            userCommands: function() {
-                var response = '<strong style="position:relative;left: 20%;">=== ' + p3Lang.i18n('commands.userCommands') + ' ===</strong><br><ul class="p3-commands">';
-                for (var i in userCommands) {
-                    if (!userCommands.hasOwnProperty(i)) continue;
-                    var command = userCommands[i][0];
-                    if (command.split('(').length > 1 && command.split(')').length > 1) {
+        ['/badges (commands.variables.on/commands.variables.off)', 'commands.descriptions.badges'],
+        ['/join', 'commands.descriptions.join'],
+        ['/leave', 'commands.descriptions.leave'],
+        ['/whoami', 'commands.descriptions.whoami'],
+        ['/mute', 'commands.descriptions.mute'],
+        ['/automute', 'commands.descriptions.automute'],
+        ['/unmute', 'commands.descriptions.unmute'],
+        ['/nextsong', 'commands.descriptions.nextsong'],
+        ['/refresh', 'commands.descriptions.refresh'],
+        ['/status', 'commands.descriptions.status'],
+        ['/alertson (commands.variables.word)', 'commands.descriptions.alertson'],
+        ['/alertsoff', 'commands.descriptions.alertsoff'],
+        ['/grab', 'commands.descriptions.grab'],
+        ['/getpos', 'commands.descriptions.getpos'],
+        ['/version', 'commands.descriptions.version'],
+        ['/commands', 'commands.descriptions.commands'],
+        ['/link', 'commands.descriptions.link'],
+        ['/volume (commands.variables.number/+/-)']
+    ], modCommands = [
+        ['/whois (commands.variables.username)', 'commands.descriptions.whois', API.ROLE.BOUNCER],
+        ['/skip', 'commands.descriptions.skip', API.ROLE.BOUNCER],
+        ['/ban (commands.variables.username)', 'commands.descriptions.ban', API.ROLE.BOUNCER],
+        ['/lockskip', 'commands.descriptions.lockskip', API.ROLE.MANAGER],
+        ['/lock', 'commands.descriptions.lock', API.ROLE.MANAGER],
+        ['/unlock', 'commands.descriptions.unlock', API.ROLE.MANAGER],
+        ['/add (commands.variables.username)', 'commands.descriptions.add', API.ROLE.BOUNCER],
+        ['/remove (commands.variables.username)', 'commands.descriptions.remove', API.ROLE.BOUNCER],
+        ['/whois all', 'commands.descriptions.whois', API.ROLE.AMBASSADOR],
+        ['/banall', 'commands.descriptions.banall', API.ROLE.AMBASSADOR]
+    ], a = Class.extend({
+        userCommands: function() {
+            var response = '<strong style="position:relative;left: 20%;">=== ' + p3Lang.i18n('commands.userCommands') + ' ===</strong><br><ul class="p3-commands">';
+            for (var i in userCommands) {
+                if (!userCommands.hasOwnProperty(i)) continue;
+                var command = userCommands[i][0];
+                if (command.split('(').length > 1 && command.split(')').length > 1) {
+                    var argumentTranslationParts = command.split('(')[1].split(')')[0].split('/');
+
+                    command = command.split('(')[0] + '<em>';
+
+                    for (var j in argumentTranslationParts) {
+                        if (!argumentTranslationParts.hasOwnProperty(j)) continue;
+                        if (argumentTranslationParts[j] == '+' || argumentTranslationParts[j] == '-') {
+                            command += argumentTranslationParts[j];
+                        } else {
+                            command += p3Lang.i18n(argumentTranslationParts[j]);
+                        }
+                    }
+
+                    command += '</em>';
+                }
+                response += '<li class="userCommands">' + command + '<br><em>' + p3Lang.i18n(userCommands[i][1]) + '</em></li>';
+            }
+            response+= '</ul>';
+            return response;
+        },
+        modCommands: function() {
+            var response = '<br><strong style="position:relative;left: 20%;">=== ' + p3Lang.i18n('commands.modCommands') + ' ===</strong><br><ul class="p3-commands">';
+            for (var i in modCommands) {
+                if (!modCommands.hasOwnProperty(i)) continue;
+                if (API.hasPermission(undefined, modCommands[i][2])) {
+                    var command = modCommands[i][0];
+                    if (command.split('(').length > 1) {
                         var argumentTranslationParts = command.split('(')[1].split(')')[0].split('/');
 
                         command = command.split('(')[0] + '<em>';
@@ -3313,52 +3358,25 @@ define('b9a9d4/a0a096/d86c6d', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
 
                         command += '</em>';
                     }
-                    response += '<li class="userCommands">' + command + '<br><em>' + p3Lang.i18n(userCommands[i][1]) + '</em></li>';
+                    response += '<li class="modCommands">' + command + '<br><em>' + p3Lang.i18n(modCommands[i][1]) + '</em></li>';
                 }
-                response += '</ul>';
-                return response;
-            },
-            modCommands: function() {
-                var response = '<br><strong style="position:relative;left: 20%;">=== ' + p3Lang.i18n('commands.modCommands') + ' ===</strong><br><ul class="p3-commands">';
-                for (var i in modCommands) {
-                    if (!modCommands.hasOwnProperty(i)) continue;
-                    if (API.hasPermission(undefined, modCommands[i][2])) {
-                        var command = modCommands[i][0];
-                        if (command.split('(').length > 1) {
-                            var argumentTranslationParts = command.split('(')[1].split(')')[0].split('/');
-
-                            command = command.split('(')[0] + '<em>';
-
-                            for (var j in argumentTranslationParts) {
-                                if (!argumentTranslationParts.hasOwnProperty(j)) continue;
-                                if (argumentTranslationParts[j] == '+' || argumentTranslationParts[j] == '-') {
-                                    command += argumentTranslationParts[j];
-                                } else {
-                                    command += p3Lang.i18n(argumentTranslationParts[j]);
-                                }
-                            }
-
-                            command += '</em>';
-                        }
-                        response += '<li class="modCommands">' + command + '<br><em>' + p3Lang.i18n(modCommands[i][1]) + '</em></li>';
-                    }
-                }
-                response += '</ul>';
-                return response;
-            },
-            print: function() {
-                var content = '<strong style="font-size:1.4em;position:relative;left: 20%">' + p3Lang.i18n('commands.header') + '</strong><br>';
-                content += this.userCommands();
-                if (API.hasPermission(undefined, API.ROLE.BOUNCER)) {
-                    content += this.modCommands();
-                }
-                p3Utils.chatLog(undefined, content, undefined, -1);
             }
-        });
+            response += '</ul>';
+            return response;
+        },
+        print: function() {
+            var content = '<strong style="font-size:1.4em;position:relative;left: 20%">' + p3Lang.i18n('commands.header') + '</strong><br>';
+            content += this.userCommands();
+            if (API.hasPermission(undefined, API.ROLE.BOUNCER)) {
+                content += this.modCommands();
+            }
+            p3Utils.chatLog(undefined, content, undefined, -1);
+        }
+    });
     return new a();
 });
-define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/a0a096/d86c6d', 'b9a9d4/cae789', 'b9a9d4/cbfab5', 'b9a9d4/b2e27d', 'b9a9d4/f24d95/f84645', 'b9a9d4/f24d95/e2730c'], function(TriggerHandler, p3Utils, p3Lang, dialogCommands, Settings, Version, StyleManager, Context, PlaybackModel) {
-    var commandHandler;
+define('ad77cc/e96f5a/f7b286',['ad77cc/e96f5a/a1fc22', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/c8f2b6/d5e809', 'ad77cc/abe93c', 'ad77cc/c6b257', 'ad77cc/c6be2b', 'ad77cc/d2f21b/d2d797', 'ad77cc/d2f21b/c7ef85', 'ad77cc/cdfb8c'], function(TriggerHandler, p3Utils, p3Lang, dialogCommands, Settings, Version, StyleManager, Context, PlaybackModel, ModuleLoader) {
+    var commandHandler, user;
     commandHandler = TriggerHandler.extend({
         trigger: API.CHAT_COMMAND,
         handler: function(value) {
@@ -3368,63 +3386,122 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                 if (p3Utils.equalsIgnoreCase(command, 'whois')) {
                     if (args.length > 0 && p3Utils.equalsIgnoreCase(args[0], 'all')) {
                         p3Utils.getAllUsers();
-                    } else {
+                    } else if (args.length > 0) {
                         p3Utils.getUserInfo(args.join(' '));
+                    } else {
+                        API.chatLog(p3Lang.i18n('error.invalidWhoisSyntax'));
                     }
                     return;
                 }
+
                 if (API.hasPermission(undefined, API.ROLE.MANAGER)) {
                     if (p3Utils.equalsIgnoreCase(command, 'banall')) {
                         var me = API.getUser(),
                             users = API.getUsers();
+                        if (users.length < 2) return;
                         for (i in users) {
                             if (users.hasOwnProperty(i) && users[i].id !== me.id)
                                 API.moderateBanUser(users[i].id, 0, API.BAN.PERMA);
                         }
                         return;
                     }
-                }
-            }
-            if (API.hasPermission(undefined, API.ROLE.MANAGER)) {
-                if (p3Utils.equalsIgnoreCase(command, 'lock')) {
-                    API.moderateLockWaitList(true, false);
-                    return;
-                }
-                if (p3Utils.equalsIgnoreCase(command, 'unlock')) {
-                    API.moderateLockWaitList(false, false);
-                    return;
-                }
-                if (p3Utils.equalsIgnoreCase(command, 'lockskip')) {
-                    var userID = API.getDJ().id;
-                    API.once(API.ADVANCE, function() {
-                        API.once(API.WAIT_LIST_UPDATE, function() {
-                            API.moderateMoveDJ(userID, 1);
+                    if (p3Utils.equalsIgnoreCase(command, 'lock')) {
+                        API.moderateLockWaitList(true, false);
+                        return;
+                    }
+                    if (p3Utils.equalsIgnoreCase(command, 'unlock')) {
+                        API.moderateLockWaitList(false, false);
+                        return;
+                    }
+                    if (p3Utils.equalsIgnoreCase(command, 'lockskip')) {
+                        var userID = API.getDJ().id;
+                        if (API.getDJ() == null) return;
+                        API.once(API.ADVANCE, function() {
+                            API.once(API.WAIT_LIST_UPDATE, function() {
+                                API.moderateMoveDJ(userID, 1);
+                            });
+                            API.moderateAddDJ(userID);
                         });
-                        API.moderateAddDJ(userID);
-                    });
-                    API.moderateForceSkip();
-                    return;
+                        API.moderateForceSkip();
+                        return;
+                    }
                 }
-            }
-            if (API.hasPermission(undefined, API.ROLE.BOUNCER)) {
-                if (p3Utils.equalsIgnoreCase(command, 'skip')) {
-                    if (API.getDJ() == null) return;
-                    if (value.length > 5)
-                        API.sendChat('@' + API.getDJ().username + ' - Reason for skip: ' + value.substr(5).trim());
-                    API.moderateForceSkip();
-                    return;
-                }
-                if (p3Utils.equalsIgnoreCase(command, 'whois')) {
-                    p3Utils.getUserInfo(args.join(' '));
-                    return;
-                }
-                if (p3Utils.equalsIgnoreCase(command, 'add')) {
-                    this.moderation(args.join(' '), 'adddj');
-                    return;
-                }
-                if (p3Utils.equalsIgnoreCase(command, 'remove')) {
-                    this.moderation(args.join(' '), 'removedj');
-                    return;
+
+                if (API.hasPermission(undefined, API.ROLE.BOUNCER)) {
+                    if (p3Utils.equalsIgnoreCase(command, 'ban')) {
+                        if (p3Utils.equalsIgnoreCaseTrim(command, 'ban')) {
+                            API.chatLog('error.invalidBanSyntax');
+                            return;
+                        }
+                        if (value.indexOf('::') < 0) {
+                            user = p3Utils.getUser(args.join(' '));
+                            if (user === null) {
+                                API.chatLog(p3Lang.i18n('error.userNotFound'));
+                                return;
+                            } else {
+                                API.moderateBanUser(user.id, API.BAN.HOUR, 0);
+                            }
+                        } else {
+                            var values = value.split('::');
+                            user = p3Utils.getUser(values[0]);
+                            if (user === null) {
+                                API.chatLog(p3Lang.i18n('error.userNotFound'));
+                                return;
+                            } else {
+                                var time, reason;
+                                time = values[1];
+                                reason = values[2];
+                                if ([60, 1, 1440, 24, -1].indexOf(time) < -1) {
+                                    API.chatLog(p3Lang.i18n('error.invalidBanTime'), time);
+                                } else {
+                                    if ([0, 1, 2, 3, 4, 5].indexOf(reason) < -1) reason = 0;
+                                    API.moderateBanUser(user.id, time, reason);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    if (p3Utils.equalsIgnoreCase(command, 'skip')) {
+                        if (API.getDJ() == null) return;
+                        if (value.length > 5)
+                            API.sendChat('@' + API.getDJ().username + ' - Reason for skip: ' + value.substr(5).trim());
+                        API.moderateForceSkip();
+                        return;
+                    }
+                    if (p3Utils.equalsIgnoreCase(command, 'add')) {
+                        if (args.length < 1) {
+                            API.chatLog(p3Lang.i18n('error.invalidAddSyntax'));
+                            return;
+                        }
+                        user = p3Utils.getUser(args.join(' '));
+                        if (user !== null) {
+                            if (API.getWaitListPosition(user.id) === -1) {
+                                API.moderateAddDJ(user.id);
+                            } else {
+                                API.chatLog(p3Lang.i18n('error.alreadyInWaitList', user.username));
+                            }
+                        } else {
+                            API.chatLog(p3Lang.i18n('error.userNotFound'));
+                        }
+                        return;
+                    }
+                    if (p3Utils.equalsIgnoreCase(command, 'remove')) {
+                        if (args.length < 1) {
+                            API.chatLog(p3Lang.i18n('error.invalidRemoveSyntax'));
+                            return;
+                        }
+                        user = p3Utils.getUser(args.join(' '));
+                        if (user !== null) {
+                            if (API.getWaitListPosition(user.id !== -1)) {
+                                API.moderateRemoveDJ(user.id);
+                            } else {
+                                API.chatLog(p3Lang.i18n('error.notInWaitList', user.username));
+                            }
+                        } else {
+                            API.chatLog(p3Lang.i18n('error.userNotFound'));
+                        }
+                        return;
+                    }
                 }
             }
             if (p3Utils.equalsIgnoreCase(command, 'commands')) {
@@ -3436,14 +3513,19 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                 if (args.length > 0 && p3Utils.equalsIgnoreCase(args[0], p3Lang.i18n('commands.variables.off'))) {
                     // TODO: Add setting for this
                     StyleManager.set('hide-badges', '#chat .msg { padding: 5px 8px 6px 8px; } #chat-messages .badge-box { display: none; }');
+                    API.chatLog(p3Lang.i18n('commands.responses.badgeoff'));
+                } else {
+                    API.chatLog(p3Lang.i18n('commands.responses.badgeon'));
                 }
                 return;
             }
             if (p3Utils.equalsIgnoreCase(command, 'join')) {
+                if (API.getWaitListPosition() !== -1) return;
                 API.djJoin();
                 return;
             }
             if (p3Utils.equalsIgnoreCase(command, 'leave')) {
+                if (API.getWaitListPosition() === -1) return;
                 API.djLeave();
                 return;
             }
@@ -3459,9 +3541,9 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                 if (args.length > 0) {
                     if (p3Utils.isNumber(args[0])) {
                         API.setVolume(~~args[0]);
-                    } else if (args[0] == '+') {
+                    } else if (args[0] === '+') {
                         API.setVolume(API.getVolume() + 1);
-                    } else if (args[0] == '-') {
+                    } else if (args[0] === '-') {
                         API.setVolume(API.getVolume() - 1);
                     }
                 }
@@ -3486,28 +3568,6 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                 PlaybackModel.muteOnce();
                 return;
             }
-            // Worst hidden easter egg ever, but you can test this fullscreen feature so....
-            // please test it now you found the command xD
-            if (p3Utils.equalsIgnoreCase(command, 'easteregg')) {
-                (function() {
-                    var $docWidth = $(document).width(),
-                        $docHeight = $(document).height(),
-                        $chat = $('#chat'),
-                        $playbackControls = $('#playback-controls');
-
-                    $('#playback-container')
-                        .width($docWidth - $chat.width())
-                        .height($docHeight - $('.app-header').height() - $('#footer').height());
-
-                    $playbackControls.css('left', ($docWidth - $chat.width() - $playbackControls.width()) / 2 + 'px');
-
-                    $('#playback').css({
-                        left: 9,
-                        'z-index': 6
-                    });
-                })();
-                return;
-            }
             if (p3Utils.equalsIgnoreCase(command, 'link')) {
                 API.sendChat('plugCubed : http://plugcubed.net');
                 return;
@@ -3527,7 +3587,7 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                     return API.chatLog(p3Lang.i18n('error.noNextSong'));
                 }
                 nextSong = nextSong.media;
-                var p3history = require('b9a9d4/bdd18a/cf9f03');
+                var p3history = require('ad77cc/afb9e3/cb31a7');
                 var historyInfo = p3history.isInHistory(nextSong.id);
                 API.chatLog(p3Lang.i18n('commands.responses.nextsong', nextSong.title, nextSong.author));
                 if (historyInfo.pos > -1 && !historyInfo.skipped) {
@@ -3551,9 +3611,9 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                 return;
             }
             if (p3Utils.equalsIgnoreCase(command, 'getpos')) {
-                var lookup = p3Utils.getUser(value.substr(8)),
-                    user = lookup === null ? API.getUser() : lookup,
-                    spot = API.getWaitListPosition(user.id);
+                var lookup = p3Utils.getUser(value.substr(8));
+                user = lookup === null ? API.getUser() : lookup;
+                var spot = API.getWaitListPosition(user.id);
                 if (API.getDJ().id === user.id) {
                     API.chatLog(p3Lang.i18n('info.userDjing', user.id === API.getUser().id ? p3Lang.i18n('ranks.you') : p3Utils.cleanTypedString(user.username)));
                 } else if (spot === 0) {
@@ -3584,8 +3644,8 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
                         var playlist = playlists[i];
                         if (playlist.active) {
                             if (playlist.count < 200) {
-                                var historyID = require('d5eda/b4d5c/c7b46').get('historyID');
-                                var MGE = require('d5eda/f9018/d80d3');
+                                var historyID = PlaybackModel.get('historyID');
+                                var MGE = ModuleLoader.getEvent('MediaGrabEvent');
                                 Context.dispatch(new MGE(MGE.GRAB, playlist.id, historyID));
                             } else {
                                 API.chatLog(p3Lang.i18n('error.yourActivePlaylistIsFull'));
@@ -3615,13 +3675,14 @@ define('b9a9d4/d0cf31/f54efb', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/fd4984', 'b9a9d4
     });
     return new commandHandler();
 });
-define('b9a9d4/d0cf31/ab46df', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a9d4/cae789', 'b9a9d4/dd1fe1/f32896'], function($, Class, p3Lang, Settings, enumNotifications) {
+
+define('ad77cc/e96f5a/c35ede',['jquery', 'ad77cc/b9ec20', 'ad77cc/e30d36', 'ad77cc/abe93c', 'ad77cc/f76cc1/d4750a'], function ($, Class, p3Lang, Settings, enumNotifications) {
     var dialogTarget, dialogObserver;
     var handler = Class.extend({
-        register: function() {
+        register: function () {
             dialogTarget = document.querySelector('#dialog-container');
-            dialogObserver = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
+            dialogObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
                     if (mutation.type === 'childList' && mutation.addedNodes[0] !== undefined) {
                         if (mutation.addedNodes[0].attributes[0].nodeValue === 'dialog-restricted-media') {
                             if ((Settings.notify & enumNotifications.SONG_UNAVAILABLE) === enumNotifications.SONG_UNAVAILABLE) {
@@ -3635,13 +3696,13 @@ define('b9a9d4/d0cf31/ab46df', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/ba727f', 'b9a
                 childList: true
             });
         },
-        close: function() {
+        close: function () {
             dialogObserver.disconnect();
         }
     });
     return new handler();
 });
-define('b9a9d4/d68bce/b8e0b8', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984'], function(TriggerHandler, Settings, p3Utils) {
+define('ad77cc/f5bddc/e50444',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264'], function(TriggerHandler, Settings, p3Utils) {
     var handler = TriggerHandler.extend({
         trigger: 'chat',
         handler: function(data) {
@@ -3657,7 +3718,7 @@ define('b9a9d4/d68bce/b8e0b8', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
 
     return new handler();
 });
-define('b9a9d4/d68bce/cccf89', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/a043fc', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a9d4/a0a096/b36ec9'], function(TriggerHandler, Settings, RoomSettings, p3Lang, p3Utils, Menu) {
+define('ad77cc/f5bddc/f2843f',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b556f2', 'ad77cc/e30d36', 'ad77cc/b9e264', 'ad77cc/c8f2b6/d8c4df'], function(TriggerHandler, Settings, RoomSettings, p3Lang, p3Utils, Menu) {
     var join, handler;
 
     join = function() {
@@ -3704,8 +3765,8 @@ define('b9a9d4/d68bce/cccf89', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
                 return;
 
             var a, b;
-            a = data.type === 'mention' && API.hasPermission(data.fromID, API.ROLE.BOUNCER);
-            b = data.message.indexOf('@') < 0 && (API.hasPermission(data.fromID, API.ROLE.MANAGER) || p3Utils.isPlugCubedDeveloper(data.fromID));
+            a = data.type === 'mention' && API.hasPermission(data.uid, API.ROLE.BOUNCER);
+            b = data.message.indexOf('@') < 0 && (API.hasPermission(data.uid, API.ROLE.MANAGER) || p3Utils.isPlugCubedDeveloper(data.uid));
             if (a || b) {
                 if (data.message.indexOf('!joindisable') > -1) {
                     Settings.autojoin = false;
@@ -3719,7 +3780,7 @@ define('b9a9d4/d68bce/cccf89', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
 
     return new handler();
 });
-define('b9a9d4/d68bce/d7affd', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/ba727f', 'b9a9d4/f24d95/e2730c'], function(TriggerHandler, Settings, p3Lang, PlaybackModel) {
+define('ad77cc/f5bddc/d5c11a',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/e30d36', 'ad77cc/d2f21b/c7ef85'], function(TriggerHandler, Settings, p3Lang, PlaybackModel) {
     var handler = TriggerHandler.extend({
         trigger: 'advance',
         handler: function(data) {
@@ -3733,7 +3794,7 @@ define('b9a9d4/d68bce/d7affd', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
     });
     return new handler();
 });
-define('b9a9d4/d68bce/a24e81', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/ba727f', 'b9a9d4/cae789', 'b9a9d4/a043fc', 'b9a9d4/fd4984', 'b9a9d4/f24d95/e2730c', 'b9a9d4/a0a096/b36ec9', 'lang/Lang'], function(TriggerHandler, p3Lang, Settings, RoomSettings, p3Utils, PlaybackModel, Menu, Lang) {
+define('ad77cc/f5bddc/f1ec1d',['ad77cc/e96f5a/a1fc22', 'ad77cc/e30d36', 'ad77cc/abe93c', 'ad77cc/b556f2', 'ad77cc/b9e264', 'ad77cc/d2f21b/c7ef85', 'ad77cc/c8f2b6/d8c4df', 'lang/Lang'], function(TriggerHandler, p3Lang, Settings, RoomSettings, p3Utils, PlaybackModel, Menu, Lang) {
     var handler = TriggerHandler.extend({
         trigger: 'chat',
         handler: function(data) {
@@ -3742,8 +3803,7 @@ define('b9a9d4/d68bce/a24e81', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/ba727f', 'b9a9d4
 
             var that = this;
 
-            var a = data.type === 'mention' && API.hasPermission(data.fromID, API.ROLE.BOUNCER),
-                b = data.message.indexOf('@') < 0 && (API.hasPermission(data.fromID, API.ROLE.MANAGER) || p3Utils.isPlugCubedDeveloper(data.fromID));
+            var a = data.type === 'mention' && API.hasPermission(data.uid, API.ROLE.BOUNCER), b = data.message.indexOf('@') < 0 && (API.hasPermission(data.uid, API.ROLE.MANAGER) || p3Utils.isPlugCubedDeveloper(data.uid));
             if (a || b) {
                 if (data.message.indexOf('!afkdisable') > -1) {
                     Settings.autorespond = false;
@@ -3757,7 +3817,7 @@ define('b9a9d4/d68bce/a24e81', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/ba727f', 'b9a9d4
                 }
             }
 
-            if (data.type === 'mention' && data.message.indexOf('@' + API.getUser().username) > -1) {
+            if (data.type === 'mention' && data.message.indexOf('@'  + API.getUser().username) > -1) {
                 if (Settings.autorespond && !Settings.recent) {
                     Settings.recent = true;
                     $('#chat-input-field').attr('placeholder', p3Lang.i18n('autorespond.nextIn', p3Utils.getTimestamp(Date.now() + 18E4)));
@@ -3781,7 +3841,7 @@ define('b9a9d4/d68bce/a24e81', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/ba727f', 'b9a9d4
 
     return new handler();
 });
-define('b9a9d4/d68bce/f2552b', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/a043fc', 'b9a9d4/fd4984'], function(TriggerHandler, Settings, RoomSettings, p3Utils) {
+define('ad77cc/f5bddc/d13168',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b556f2', 'ad77cc/b9e264'], function(TriggerHandler, Settings, RoomSettings, p3Utils) {
     var woot, handler;
 
     woot = function() {
@@ -3802,7 +3862,7 @@ define('b9a9d4/d68bce/f2552b', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
 
     return new handler();
 });
-define('b9a9d4/d68bce/d490a0', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984'], function($, Class, TriggerHandler, Settings, p3Utils) {
+define('ad77cc/f5bddc/ce3eb8',['jquery', 'ad77cc/b9ec20', 'ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264'], function($, Class, TriggerHandler, Settings, p3Utils) {
     var WatcherClass = Class.extend({
         init: function() {
             this.current = {
@@ -3898,14 +3958,11 @@ define('b9a9d4/d68bce/d490a0', ['jquery', 'b9a9d4/fa8cfc', 'b9a9d4/d0cf31/a7c2e0
 
     return new handler();
 });
-define('b9a9d4/d68bce/f92a79', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4/fd4984'], function(TriggerHandler, Settings, p3Utils) {
-    var Database, PlaybackModel;
+define('ad77cc/f5bddc/ae0422',['ad77cc/e96f5a/a1fc22', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/d2f21b/a1d195', 'ad77cc/cdfb8c'], function(TriggerHandler, Settings, p3Utils, Database, ModuleLoader) {
 
-    if (!p3Utils.runLite) {
-        Database = require('d5eda/f8ed4/d4010');
-        PlaybackModel = require('d5eda/b4d5c/c7b46');
-    }
-
+    var PlaybackModel = ModuleLoader.getModule({
+        onElapsedChange: 'function'
+    });
     var handler = TriggerHandler.extend({
         trigger: 'advance',
         register: function() {
@@ -3913,8 +3970,7 @@ define('b9a9d4/d68bce/f92a79', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
             this.title = '';
             this.titleClean = '';
             this.titlePrefix = '';
-            if (!p3Utils.runLite)
-                PlaybackModel.on('change:streamDisabled change:volume change:muted', this.onStreamChange, this);
+            PlaybackModel.on('change:streamDisabled change:volume change:muted', this.onStreamChange, this);
             this.onStreamChange();
         },
         close: function() {
@@ -3922,19 +3978,18 @@ define('b9a9d4/d68bce/f92a79', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
             if (this.intervalID)
                 clearInterval(this.intervalID);
             document.title = p3Utils.getRoomName();
-            if (!p3Utils.runLite)
-                PlaybackModel.off('change:streamDisabled change:volume change:muted', this.onStreamChange, this);
+            PlaybackModel.off('change:streamDisabled change:volume change:muted', this.onStreamChange, this);
         },
         handler: function(data) {
             if (Settings.songTitle && data.media && data.media.title) {
-                this.titlePrefix = (API.getVolume() > 0 && (p3Utils.runLite || (!p3Utils.runLite && !Database.settings.streamDisabled)) ? '▶' : '❚❚') + ' ';
+                this.titlePrefix = (API.getVolume() > 0 && (p3Utils.runLite || (!p3Utils.runLite && !Database.settings.streamDisabled)) ? 'â–¶' : 'âťšâťš') + 'â€„';
 
                 if (this.titleClean === data.media.author + ' - ' + data.media.title + ' :: ' + p3Utils.getRoomName() + ' :: ') return;
 
                 if (this.intervalID)
                     clearInterval(this.intervalID);
                 this.titleClean = data.media.author + ' - ' + data.media.title + ' :: ' + p3Utils.getRoomName() + ' :: ';
-                this.title = (this.titlePrefix + this.titleClean).split(' ').join(' ');
+                this.title = (this.titlePrefix + this.titleClean).split(' ').join('â€„');
                 document.title = this.title;
                 var _this = this;
                 this.intervalID = setInterval(function() {
@@ -3961,7 +4016,8 @@ define('b9a9d4/d68bce/f92a79', ['b9a9d4/d0cf31/a7c2e0', 'b9a9d4/cae789', 'b9a9d4
 
     return new handler();
 });
-define('b9a9d4/cbc130', ['b9a9d4/fa8cfc', 'b9a9d4/d68bce/b8e0b8', 'b9a9d4/d68bce/cccf89', 'b9a9d4/d68bce/d7affd', 'b9a9d4/d68bce/a24e81', 'b9a9d4/d68bce/f2552b', 'b9a9d4/d68bce/d490a0', 'b9a9d4/d68bce/f92a79'], function() {
+
+define('ad77cc/a56aaf',['ad77cc/b9ec20', 'ad77cc/f5bddc/e50444', 'ad77cc/f5bddc/f2843f', 'ad77cc/f5bddc/d5c11a', 'ad77cc/f5bddc/f1ec1d', 'ad77cc/f5bddc/d13168', 'ad77cc/f5bddc/ce3eb8', 'ad77cc/f5bddc/ae0422'], function() {
     var modules, Class, handler;
 
     modules = $.makeArray(arguments);
@@ -3985,7 +4041,7 @@ define('b9a9d4/cbc130', ['b9a9d4/fa8cfc', 'b9a9d4/d68bce/b8e0b8', 'b9a9d4/d68bce
 
     return new handler();
 });
-define('b9a9d4/d0cf31/cd3da1', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
+define('ad77cc/e96f5a/f5b7a8',['jquery', 'ad77cc/b9ec20'], function($, Class) {
     return Class.extend({
         // Time between each tick (in milliseconds)
         tickTime: 1E3,
@@ -4000,29 +4056,28 @@ define('b9a9d4/d0cf31/cd3da1', ['jquery', 'b9a9d4/fa8cfc'], function($, Class) {
                 this.timeoutID = setTimeout(this.proxy, this.tickTime);
             }
         }, // The function that is called on each tick
-        tick: function() {},
+        tick: function() {
+        },
         close: function() {
             clearTimeout(this.timeoutID);
             this.closed = true;
         }
     });
 });
-define('b9a9d4/f24d95/dd1940', ['b9a9d4/fd4984'], function(p3Utils) {
-    if (!p3Utils.runLite)
-        return require('d5eda/ab55b/d47bd');
-    return {
-        _byId: {}
-    };
+define('ad77cc/d2f21b/c24a85',['ad77cc/cdfb8c'], function(ModuleLoader) {
+    return ModuleLoader.getCollection({
+        comparator: 'username'
+    });
 });
-define('b9a9d4/f28059/c72bcb', ['jquery', 'b9a9d4/d0cf31/cd3da1', 'b9a9d4/f24d95/dd1940', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f'], function($, TickerHandler, IgnoreCollection, Settings, p3Utils, p3Lang) {
+
+define('ad77cc/d23d73/c7658e',['jquery', 'ad77cc/e96f5a/f5b7a8', 'ad77cc/d2f21b/c24a85', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36'], function($, TickerHandler, IgnoreCollection, Settings, p3Utils, p3Lang) {
     var handler;
 
     handler = TickerHandler.extend({
         tickTime: 1E3,
         tick: function() {
             if (Settings.moderation.afkTimers && (p3Utils.isPlugCubedDeveloper() || API.hasPermission(undefined, API.ROLE.BOUNCER)) && $('#waitlist-button').hasClass('selected')) {
-                var a = API.getWaitList(),
-                    b = $('#waitlist').find('.user');
+                var a = API.getWaitList(), b = $('#waitlist').find('.user');
                 for (var c = 0; c < a.length; c++) {
                     var d, e, f;
 
@@ -4047,7 +4102,7 @@ define('b9a9d4/f28059/c72bcb', ['jquery', 'b9a9d4/d0cf31/cd3da1', 'b9a9d4/f24d95
 
     return handler;
 });
-define('b9a9d4/f28059/e4cfb1', ['jquery', 'b9a9d4/d0cf31/cd3da1', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'lang/Lang'], function($, TickerHandler, Settings, p3Utils, p3Lang, Lang) {
+define('ad77cc/d23d73/e087be',['jquery', 'ad77cc/e96f5a/f5b7a8', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'lang/Lang'], function($, TickerHandler, Settings, p3Utils, p3Lang, Lang) {
     var handler;
 
     try {
@@ -4131,15 +4186,14 @@ define('b9a9d4/f28059/e4cfb1', ['jquery', 'b9a9d4/d0cf31/cd3da1', 'b9a9d4/cae789
 
     return handler;
 });
-define('b9a9d4/f28059/fd0182', ['b9a9d4/d0cf31/cd3da1', 'b9a9d4/f24d95/f84645'], function(TickerHandler, _$context) {
+define('ad77cc/d23d73/ac094d',['ad77cc/e96f5a/f5b7a8', 'ad77cc/d2f21b/d2d797'], function(TickerHandler, _$context) {
     return TickerHandler.extend({
         tickTime: 1E4,
         tick: function() {
-            var a = _$context._events['chat:receive'].concat(API._events[API.CHAT]),
-                c = function() {
-                    API.chatLog('plug³ does not support one or more of the other scripts that are currently running because of potential dangerous behaviour');
-                    plugCubed.close();
-                };
+            var a = _$context._events['chat:receive'].concat(API._events[API.CHAT]), c = function() {
+                API.chatLog('plugÂł does not support one or more of the other scripts that are currently running because of potential dangerous behaviour');
+                plugCubed.close();
+            };
             for (var b in a) {
                 if (!a.hasOwnProperty(b)) continue;
                 var script = a[b].callback.toString();
@@ -4159,14 +4213,12 @@ define('b9a9d4/f28059/fd0182', ['b9a9d4/d0cf31/cd3da1', 'b9a9d4/f24d95/f84645'],
         }
     });
 });
-define('b9a9d4/f28059/db8397', ['jquery', 'b9a9d4/d0cf31/cd3da1'], function($, TickerHandler) {
+define('ad77cc/d23d73/c3a7de',['jquery', 'ad77cc/e96f5a/f5b7a8'], function($, TickerHandler) {
     return TickerHandler.extend({
         tickTime: 1E4,
         tick: function() {
             var $ytFrame = $('#yt-frame');
-            var a, b = true,
-                c = true,
-                d;
+            var a, b = true, c = true, d;
 
             a = $ytFrame.height() == null || $ytFrame.height() > 230;
             if ($ytFrame.width() != null) {
@@ -4179,12 +4231,12 @@ define('b9a9d4/f28059/db8397', ['jquery', 'b9a9d4/d0cf31/cd3da1'], function($, T
                 return;
             }
 
-            API.chatLog('plug³ does not support hiding video or scripts supporting hiding the video player');
+            API.chatLog('plugÂł does not support hiding video or scripts supporting hiding the video player');
             plugCubed.close();
         }
     });
 });
-define('b9a9d4/e8cfb7', ['b9a9d4/fa8cfc', 'b9a9d4/f28059/c72bcb', 'b9a9d4/f28059/e4cfb1', 'b9a9d4/f28059/fd0182', 'b9a9d4/f28059/db8397'], function() {
+define('ad77cc/edc060',['ad77cc/b9ec20', 'ad77cc/d23d73/c7658e', 'ad77cc/d23d73/e087be', 'ad77cc/d23d73/ac094d', 'ad77cc/d23d73/c3a7de'], function() {
     var modules, Class, instances;
 
     modules = $.makeArray(arguments);
@@ -4209,7 +4261,7 @@ define('b9a9d4/e8cfb7', ['b9a9d4/fa8cfc', 'b9a9d4/f28059/c72bcb', 'b9a9d4/f28059
 
     return new handler();
 });
-define('b9a9d4/a0a096/d8cf22/f9e154', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/e35dcc', 'b9a9d4/b2e27d', 'b9a9d4/a043fc'], function(Class, ControlPanel, Styles, RoomSettings) {
+define('ad77cc/c8f2b6/cb31ba/cbd9de',['ad77cc/b9ec20', 'ad77cc/c8f2b6/d0a417', 'ad77cc/c6be2b', 'ad77cc/b556f2'], function(Class, ControlPanel, Styles, RoomSettings) {
     var handler, $contentDiv, $formDiv, $localFileInput, $clearButton, panel;
 
     handler = Class.extend({
@@ -4270,7 +4322,7 @@ define('b9a9d4/a0a096/d8cf22/f9e154', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/e35dcc', 
 
     return new handler();
 });
-define('b9a9d4/a0a096/d8cf22/f32896', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/e35dcc'], function(Class, ControlPanel) {
+define('ad77cc/c8f2b6/cb31ba/d4750a',['ad77cc/b9ec20', 'ad77cc/c8f2b6/d0a417'], function(Class, ControlPanel) {
     var handler, $contentDiv, panel;
 
     handler = Class.extend({
@@ -4288,7 +4340,7 @@ define('b9a9d4/a0a096/d8cf22/f32896', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/e35dcc'],
 
     return new handler();
 });
-define('b9a9d4/a0a096/d8cf22/b3f65d', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/d8cf22/f9e154', 'b9a9d4/a0a096/d8cf22/f32896'], function() {
+define('ad77cc/c8f2b6/cb31ba/c7a321',['ad77cc/b9ec20', 'ad77cc/c8f2b6/cb31ba/cbd9de', 'ad77cc/c8f2b6/cb31ba/d4750a'], function() {
     var modules, Class, handler;
 
     modules = $.makeArray(arguments);
@@ -4312,10 +4364,15 @@ define('b9a9d4/a0a096/d8cf22/b3f65d', ['b9a9d4/fa8cfc', 'b9a9d4/a0a096/d8cf22/f9
 
     return new handler();
 });
-define('b9a9d4/b05860/c2c6ce', ['jquery', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a9d4/f24d95/f84645'], function($, p3Lang, p3Utils, _$context) {
-    if (p3Utils.runLite) return null;
+define('ad77cc/d2f21b/a676c0',['ad77cc/b9e264', 'ad77cc/cdfb8c'], function(p3Utils, ModuleLoader) {
+    return ModuleLoader.getView({
+        className: 'list room'
+    });
+});
 
-    var RoomUserListRow = require('d5eda/a37c8/caebc/a134f/e65f4');
+define('ad77cc/d2bcd3/d3c8b0',['jquery', 'ad77cc/e30d36', 'ad77cc/b9e264', 'ad77cc/d2f21b/d2d797', 'ad77cc/d2f21b/a676c0'], function($, p3Lang, p3Utils, _$context, RoomUserListView) {
+
+    var RoomUserListRow = RoomUserListView.prototype.RowClass;
 
     return RoomUserListRow.extend({
         vote: function() {
@@ -4326,7 +4383,7 @@ define('b9a9d4/b05860/c2c6ce', ['jquery', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a
                 }
                 if (this.model.get('grab')) {
                     this.$icon.removeClass().addClass('icon icon-grab');
-                } else if (this.model.get('vote') == 1) {
+                } else if (this.model.get('vote') === 1) {
                     this.$icon.removeClass().addClass('icon icon-woot');
                 } else {
                     this.$icon.removeClass().addClass('icon icon-meh');
@@ -4373,13 +4430,16 @@ define('b9a9d4/b05860/c2c6ce', ['jquery', 'b9a9d4/ba727f', 'b9a9d4/fd4984', 'b9a
         }
     });
 });
-define('b9a9d4/d0cf31/ab1264', ['b9a9d4/fa8cfc'], function(Class) {
+
+define('ad77cc/e96f5a/bc605f',['ad77cc/b9ec20'], function(Class) {
     return Class.extend({
         init: function() {
             this.overridden = false;
         },
-        doOverride: function() {},
-        doRevert: function() {},
+        doOverride: function() {
+        },
+        doRevert: function() {
+        },
         override: function() {
             if (this.overridden) return;
             this.doOverride();
@@ -4392,10 +4452,12 @@ define('b9a9d4/d0cf31/ab1264', ['b9a9d4/fa8cfc'], function(Class) {
         }
     })
 });
-define('b9a9d4/bdc3f2/fe8b94', ['jquery', 'b9a9d4/d0cf31/ab1264', 'b9a9d4/fd4984'], function($, OverrideHandler, p3Utils) {
-    if (p3Utils.runLite) return null;
+define('ad77cc/df357d/ac1a0a',['jquery', 'ad77cc/e96f5a/bc605f', 'ad77cc/b9e264', 'ad77cc/cdfb8c'], function($, OverrideHandler, p3Utils, ModuleLoader) {
 
-    var UserRolloverView = require('d5eda/a37c8/a134f/eade6');
+    var UserRolloverView = ModuleLoader.getView({
+        isBackbone: true,
+        id: 'user-rollover'
+    });
 
     var handler = OverrideHandler.extend({
         doOverride: function() {
@@ -4441,12 +4503,14 @@ define('b9a9d4/bdc3f2/fe8b94', ['jquery', 'b9a9d4/d0cf31/ab1264', 'b9a9d4/fd4984
     });
     return new handler();
 });
-define('b9a9d4/bdc3f2/edb2aa', ['jquery', 'b9a9d4/d0cf31/ab1264', 'b9a9d4/fd4984'], function($, OverrideHandler, p3Utils) {
-    if (p3Utils.runLite) return null;
+define('ad77cc/df357d/a58342',['jquery', 'ad77cc/e96f5a/bc605f', 'ad77cc/b9e264', 'ad77cc/cdfb8c'], function($, OverrideHandler, p3Utils, ModuleLoader) {
 
     var WaitListRow, WaitListRowPrototype, originalFunction;
 
-    WaitListRow = require('d5eda/a37c8/caebc/a134f/e9e99');
+    WaitListRow = ModuleLoader.getView({
+        className: 'user',
+        func: 'onRemoveClick'
+    });
     WaitListRowPrototype = WaitListRow.prototype;
     originalFunction = WaitListRowPrototype.onRole;
 
@@ -4466,7 +4530,8 @@ define('b9a9d4/bdc3f2/edb2aa', ['jquery', 'b9a9d4/d0cf31/ab1264', 'b9a9d4/fd4984
 
     return new handler();
 });
-define('b9a9d4/b05860', ['b9a9d4/fa8cfc', 'b9a9d4/bdc3f2/fe8b94', 'b9a9d4/bdc3f2/edb2aa'], function() {
+
+define('ad77cc/d2bcd3',['ad77cc/b9ec20', 'ad77cc/df357d/ac1a0a', 'ad77cc/df357d/a58342'], function() {
     var modules, Class, handler;
 
     modules = $.makeArray(arguments);
@@ -4490,10 +4555,10 @@ define('b9a9d4/b05860', ['b9a9d4/fa8cfc', 'b9a9d4/bdc3f2/fe8b94', 'b9a9d4/bdc3f2
 
     return new handler();
 });
-define('b9a9d4/ab7323', ['module', 'b9a9d4/fa8cfc', 'b9a9d4/f32896', 'b9a9d4/cbfab5', 'b9a9d4/b2e27d', 'b9a9d4/cae789', 'b9a9d4/fd4984', 'b9a9d4/ba727f', 'b9a9d4/a043fc', 'b9a9d4/a0a096/b36ec9', 'b9a9d4/cb529e', 'b9a9d4/d0cf31/f82544', 'b9a9d4/d0cf31/f54efb', 'b9a9d4/d0cf31/ab46df', 'b9a9d4/cbc130', 'b9a9d4/e8cfb7', 'b9a9d4/a0a096/d8cf22/b3f65d', 'b9a9d4/b05860/c2c6ce', 'b9a9d4/b05860'], function(module, Class, Notifications, Version, Styles, Settings, p3Utils, p3Lang, RoomSettings, Menu, CustomChatColors, ChatHandler, CommandHandler, DialogHandler, Features, Tickers, Panels, p3RoomUserListRow, Overrides) {
+define('ad77cc/e4f9d3',['module', 'ad77cc/b9ec20', 'ad77cc/d4750a', 'ad77cc/c6b257', 'ad77cc/c6be2b', 'ad77cc/abe93c', 'ad77cc/b9e264', 'ad77cc/e30d36', 'ad77cc/b556f2', 'ad77cc/c8f2b6/d8c4df', 'ad77cc/ca7719', 'ad77cc/e96f5a/a61113', 'ad77cc/e96f5a/f7b286', 'ad77cc/e96f5a/c35ede', 'ad77cc/a56aaf', 'ad77cc/edc060', 'ad77cc/c8f2b6/cb31ba/c7a321', 'ad77cc/d2bcd3/d3c8b0', 'ad77cc/d2bcd3', 'ad77cc/d2f21b/a676c0'], function(module, Class, Notifications, Version, Styles, Settings, p3Utils, p3Lang, RoomSettings, Menu, CustomChatColors, ChatHandler, CommandHandler, DialogHandler, Features, Tickers, Panels, p3RoomUserListRow, Overrides, RoomUserListView) {
     var Loader, loaded = false;
 
-    var RoomUserListView;
+    var original = RoomUserListView.prototype.RowClass;
 
     function __init() {
         p3Utils.chatLog(undefined, p3Lang.i18n('running', Version) + '</span><br><span class="chat-text" style="color:#66FFFF">' + p3Lang.i18n('commandsHelp'), Settings.colors.infoMessage1, -1, 'plug&#179;');
@@ -4508,12 +4573,8 @@ define('b9a9d4/ab7323', ['module', 'b9a9d4/fa8cfc', 'b9a9d4/f32896', 'b9a9d4/cbf
             if (users.hasOwnProperty(i) && p3Utils.getUserData(users[i].id, 'joinTime', -1) < 0)
                 p3Utils.setUserData(users[i].id, 'joinTime', Date.now());
         }
-
-        if (!p3Utils.runLite) {
-            RoomUserListView = require('d5eda/a37c8/caebc/a134f/c535b');
-            RoomUserListView.prototype.RowClass = p3RoomUserListRow;
-            Overrides.override();
-        }
+        RoomUserListView.prototype.RowClass = p3RoomUserListRow;
+        Overrides.override();
 
         initBody();
 
@@ -4580,10 +4641,8 @@ define('b9a9d4/ab7323', ['module', 'b9a9d4/fa8cfc', 'b9a9d4/f32896', 'b9a9d4/cbf
             CommandHandler.close();
             DialogHandler.close();
 
-            if (!p3Utils.runLite) {
-                RoomUserListView.prototype.RowClass = require('d5eda/a37c8/caebc/a134f/e65f4');
-                Overrides.revert();
-            }
+            RoomUserListView.prototype.RowClass = original;
+            Overrides.revert();
 
             var mainClass = module.id.split('/')[0],
                 modules = require.s.contexts._.defined;
@@ -4600,6 +4659,7 @@ define('b9a9d4/ab7323', ['module', 'b9a9d4/fa8cfc', 'b9a9d4/f32896', 'b9a9d4/cbf
     });
     return Loader;
 });
-require(['b9a9d4/ab7323'], function(Loader) {
+
+require(['ad77cc/e4f9d3'], function(Loader) {
     plugCubed = new Loader();
 });
