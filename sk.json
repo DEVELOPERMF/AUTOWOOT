@@ -1,0 +1,211 @@
+{
+  "running":"PlugÂł verziu %1",
+  "runningLite":"SpustenĂˇ Lite verzia plug&#179;!",
+  "runningLiteInfo":"NiektorĂ© funkcie nebudĂş fungovaĹĄ sprĂˇvne.",
+  "commandsHelp":"PouĹľi '\/commands' k rozĹˇĂ­renĂ©mu zobrazeniu rozkazov\n",
+  "autorespond":{
+    "default":"Som preÄŤ od klĂˇvesnice.",
+    "disable":"ZakĂˇzaĹĄ Autorespond AFK na chate",
+    "nextIn":"ÄŽalĹˇĂ­ AFK Autorespond bude odoslanĂ© %1",
+    "next":"Autorespond AFK na ÄŹalĹˇie zmienky",
+    "commandDisable":"%1 autojoin disabled",
+    "commandNotEnabled":"%1 autojoin was not enabled"
+  },
+  "autojoin":{
+    "commandDisable":"%1 AutomatickĂ© spojenie vypnutĂ©",
+    "commandNotEnabled":"AutomatickĂ© spojenie %1 nebolo povolenĂ©"
+  },
+  "fullscreen":{
+    "shrink":"ZmenĹˇiĹĄ",
+    "enlarge":"ZvĂ¤ÄŤĹˇiĹĄ"
+  },
+  "commands":{
+    "header":"User Information",
+    "userCommands":"UĹľĂ­vateÄľskĂ© prĂ­kazy",
+    "modCommands":"Moderovanie prĂ­kazy",
+    "variables":{
+      "username":"prezĂ˝vka ",
+      "word":"slovo",
+      "on":"ZapnutĂ©",
+      "off":"vypnutie",
+      "reason":"dĂ´vod",
+      "number":"ÄŤĂ­slo"
+    },
+    "descriptions":{
+      "join":"User Join",
+      "leave":"User Leave",
+      "whoami":"zĂ­skaĹĄ vlastnĂ© informĂˇcie",
+      "mute":"nastaviĹĄ hlasitosĹĄ na 0",
+      "automute":"RegistrovaĹĄ aktuĂˇlne prehrĂˇvanej skladby sa automaticky stlmĂ­ na budĂşce hrĂˇ",
+      "unmute":"Nastavenie hlasitosti na poslednom zvĂ¤zku",
+      "nextsong":"ZobraziĹĄ nasledujĂşcu skladbu v playlistu a ak je to v histĂłrii",
+      "refresh":"obnoviĹĄ video",
+      "alertson":"PrehraĹĄ zvuk vĹľdy definovanĂ© slovĂˇ sĂş napĂ­sanĂ© v chate",
+      "alertsoff":"zastaviĹĄ prehrĂˇvanie zvuku pri definovanĂ˝ch slovĂˇ sĂş napĂ­sanĂ© v chate",
+      "grab":"pridĂˇ aktuĂˇlnu skladbu do vybranĂ©ho zoznamu skladieb",
+      "badges":"zobraziĹĄ\/skryĹĄ uĹľĂ­vateÄľskĂ© odznaky v chate",
+      "getpos":"zĂ­skaĹĄ aktuĂˇlnu pozĂ­ciu waitlist",
+      "version":"zobrazĂ­ ÄŤĂ­slo verzie",
+      "commands":"Tento zoznam sa zobrazuje",
+      "link":"vloĹľiĹĄ odkaz na webovĂ© strĂˇnky plugCubed v chate",
+      "whois":"poskytuje vĹˇeobecnĂ© informĂˇcie o uĹľĂ­vateÄľovi",
+      "skip":"PreskoÄŤiĹĄ aktuĂˇlna skladba",
+      "ban":"kopy cieÄľovĂ˝ch pouĹľĂ­vateÄľov",
+      "lockskip":"zĂˇmky DJ booth, preskoÄŤiĹĄ a odomkne potom",
+      "lock":"zĂˇmky DJ booth",
+      "unlock":"odomkne DJ booth",
+      "add":"pridĂˇ cieÄľovĂ˝ch pouĹľĂ­vateÄľov na dj bĂşdky\/waitlist",
+      "remove":"odstraĹuje cieÄľovĂ˝ch pouĹľĂ­vateÄľov od dj bĂşdky\/waitlist",
+      "whois all":"dĂˇva userid a uĹľĂ­vateÄľskĂ© meno vĹˇetkĂ˝ch pouĹľĂ­vateÄľov v miestnosti",
+      "banall":"zĂˇkazy vĹˇetkĂ˝ch pouĹľĂ­vateÄľov v miestnosti",
+      "status":"zobrazĂ­ stav plug.dj serverov"
+    },
+    "responses":{
+      "alertson":"Zvuk sa prehrĂˇ pri nĂˇsledujĂşcich slovĂˇch: %1",
+      "alertsoff":"Zvuk uĹľ nebude pri urÄŤenĂ˝ch slovĂˇch prehratĂ˝",
+      "badgeon":"Badges have been turned on",
+      "badgeoff":"Badges have been turned off",
+      "nextsong":"VaĹˇa ÄŹalĹˇia skladba bude %1 od %2",
+      "isHistory":"Pozor: Tato skladba je stĂˇle v historiĂ­ (%1 z %2)",
+      "automute":{
+        "automuted":"%1 automaticky ztlmenĂ©.",
+        "registered":"%1 zaregistrovanĂˇ k budĂşcim automatickĂ˝m stlmenĂ­m.",
+        "unregistered":"%1 bola odobranĂˇ zo zoznamu pre automatickĂ© stlmenie."
+      },
+      "status":{
+        "rest":"REST: %1 %2 [%3ms]",
+        "socket":"Socket: %1 %2 [%3ms]"
+      }
+    }
+  },
+  "eta":{
+    "boothAvailable":"If you join the waitlist now, you would be DJing!",
+    "alreadyDJ":"You are already DJing!",
+    "waitListTime":"You are in the waitlist %1 of %2, you will be DJing in about %3!",
+    "joinTime":"If you join the waitlist now, you would be DJing in about %1!"
+  },
+  "notify":{
+    "header":"User Information",
+    "join":"PouĹľĂ­vateÄľ pripojiĹĄ",
+    "leave":"Nechajte pouĹľĂ­vateÄľa",
+    "grab":"User Grab",
+    "meh":"UĹľĂ­vateÄľ Mehs",
+    "stats":"PieseĹ Ĺˇtatistiky",
+    "updates":"PieseĹ aktualizĂˇcie",
+    "history":"PiesnĂ­ v histĂłrii",
+    "songUnavailable":"Song Unavailable",
+    "songLength":"DÄşĹľka piesne (%1 min)",
+    "message":{
+      "grab":"grabbed %1 - %2",
+      "stats":"Ĺ tatistiky: %1 woots--%2 mehs--%3 curates",
+      "updates":"PrehrĂˇva: %1 %2 <br>hrajĂş: %3",
+      "meh":"%1 meh mal tĂşto traĹĄ",
+      "join":"joined the room",
+      "leave":"left the room",
+      "history":"Skladba je v histĂłrii (%1 z %2)",
+      "historySkipped":"PesniÄŤka je v histĂłrii (%1 z %2), ale bola preskoÄŤĂ­ pretoĹľe dnes hrala",
+      "songLength":"PesniÄŤka je dlhĹˇia ako %1 minĂşta",
+      "songPrivate":"Song is private",
+      "songNotFound":"Song not found",
+      "songEmbed":"Song has embedding disabled",
+      "songStreamable":"Song doesn't support streaming"
+    }
+  },
+  "info":{
+    "header":"UĹľĂ­vateÄľskĂ© informĂˇcie",
+    "name":"Meno",
+    "title":"NĂˇzov",
+    "specialTitles":{
+      "developer":"plug&#179; VĂ˝vojĂˇr",
+      "sponsor":"plug&#179; Sponzor",
+      "ambassador":"plugÂł VeÄľvyslanec",
+      "donatorDiamond":"plugÂł Diamond donĂˇtora",
+      "donatorPlatinum":"plugÂł Platinum donĂˇtor",
+      "donatorGold":"plugÂł Gold donĂˇtor",
+      "donatorSilver":"plugÂł Silver donĂˇtor",
+      "donatorBronze":"plugÂł bronz donĂˇtor",
+      "special":"plugÂł ĹˇpeciĂˇlne patrĂłn - %1"
+    },
+    "id":"ID",
+    "rank":"HodnosĹĄ",
+    "joined":"ÄŚas pripojenia",
+    "status":"Stav",
+    "vote":"HlasovaĹĄ",
+    "position":"PozĂ­cia",
+    "points":"Body",
+    "wootCount":"Woot poÄŤĂ­taĹĄ",
+    "mehCount":"Meh poÄŤĂ­taĹĄ",
+    "ratio":"Woot\/Meh premier",
+    "djing":"DJing",
+    "notInList":"Nie v waitlist ani stĂˇnku",
+    "inWaitlist":"%1 \/ %2 waitlist",
+    "userDjing":"%1 momentĂˇlne DJing",
+    "userNextDJ":"%1 sa DJingu ÄŹalej",
+    "disconnects":"OdpojĂ­",
+    "lastDisconnect":"Naposledy odpojiĹĄ",
+    "lastPosition":"PozĂ­cia",
+    "time":"ÄŚas",
+    "lastMessage":"Last Message"
+  },
+  "ranks":{
+    "you":"Ste",
+    "regular":"beĹľnĂˇ",
+    "residentdj":"Rezident DJ",
+    "bouncer":"VyhadzovaÄŤ",
+    "manager":"SprĂˇvca",
+    "cohost":"Spolu-HostiteÄľ",
+    "host":"HostiteÄľ",
+    "ambassador":"VeÄľvyslanec",
+    "admin":"AdministrĂˇtor"
+  },
+  "roomSpecificSettings":{
+    "infoHeader":"TĂˇto miestnosĹĄ pouĹľĂ­va ĹˇpeciĂˇlne nastavenia",
+    "infoHeaderCredits":"TĂˇto miestnosĹĄ je pomocou ĹˇpeciĂˇlne nastavenia pouĹľĂ­vateÄľom %1",
+    "infoDisable":"V menu ich mĂ´ĹľeĹˇ vypnĂşĹĄ"
+  },
+  "menu":{
+    "autowoot":"Autowoot",
+    "autojoin":"AutomatickĂ© spojenie",
+    "customchatcolors":"VlastnĂ˝ Chat farby",
+    "autorespond":"AFK Autorespond",
+    "notify":"OznĂˇmenia",
+    "afktimers":"AFK ÄŤasovaÄŤ",
+    "etatimer":"ETA Timer",
+    "roomsettings":"Nastavenie Miestnosti",
+    "chatimages":"Chat obrĂˇzky",
+    "twitchemotes":"Twitch Emotes",
+    "controlpanel":"Control Panel",
+    "showdeletedmessages":"Show Deleted Messages"
+  },
+  "vote":{
+    "meh":"Meh",
+    "woot":"Woot",
+    "grab":"Grab",
+    "undecided":"NerozhodnĂ˝",
+    "djing":"Djing"
+  },
+  "tooltip":{
+    "stream":"PovoliĹĄ Video \/ Audio vysielanie",
+    "clear":"VymazaĹĄ Chat",
+    "afk":"AFK sprĂˇvu",
+    "reset":"ObnovenĂ© do pĂ´vodnĂ©ho stavu",
+    "muted":"VĹˇetky pesniÄŤky sĂş stlmenĂ©",
+    "mutedOnce":"AktuĂˇlne pesniÄŤka je stlmenĂˇ"
+  },
+  "error":{
+    "userNotFound":"UĹľĂ­vateÄľ nebol nĂˇjdenĂ˝",
+    "alreadyInWaitList":"User %1 is already in waitlist",
+    "notInWaitList":"User %1 is not in waitlist",
+    "unknownMenuKey":"NeznĂˇmy menu kÄľĂşÄŤ: %1",
+    "invalidAddSyntax":"Invalid syntax for add command. Usage: \/add @user",
+    "invalidBanSyntax":"Invalid syntax for ban command. Usage: \/ban @user or \/ban @user::time::reason",
+    "invalidBanTime":"The time specified, %1 is invalid. Valid times are 60, 1, 24, 1440, -1",
+    "invalidRemoveSyntax":"Invalid syntax for remove command. Usage: \/remove @user",
+    "invalidWhoisSyntax":"Invalid syntax for whois command. Usage: \/whois @user",
+    "noLiteSupport":"Toto nie je podporovanĂ© v plugÂł Lite",
+    "errorGettingPlaylistInfo":"Error getting playlist info",
+    "noPlaylistsFound":"No playlists found",
+    "yourActivePlaylistIsFull":"Your active playlist is full",
+    "noNextSong":"You have no queued song"
+  }
+}
