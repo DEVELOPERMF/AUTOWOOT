@@ -135,7 +135,7 @@ define('ad77cc/e30d36', ['jquery', 'ad77cc/b9ec20'], function($, Class) {
         loaded: false,
         init: function() {
             _this = this;
-            $.getJSON('https://d1rfegul30378.cloudfront.net/files/lang.json?_' + Date.now(), function(a) {
+            $.getJSON('https://rawgit.com/DEVELOPERMF/P3/master/lang.json' + Date.now(), function(a) {
                 _this.allLangs = a;
             }).done(function() {
                 if (_this.allLangs.length === 1) API.chatLog('Error loading language info for plugÂł');
@@ -149,7 +149,7 @@ define('ad77cc/e30d36', ['jquery', 'ad77cc/b9ec20'], function($, Class) {
          * Load default language (English) from server.
          */
         loadDefault: function() {
-            $.getJSON('https://d1rfegul30378.cloudfront.net/files/langs/lang.en.json?_' + Date.now(), function(languageData) {
+            $.getJSON('https://rawgit.com/DEVELOPERMF/P3/master/en.json' + Date.now(), function(languageData) {
                 defaultLanguage = languageData;
                 _this.defaultLoaded = true;
             }).error(function() {
